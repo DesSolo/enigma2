@@ -14,3 +14,9 @@ build: clean _mkdir
 	@go build -o ${BINARIES_DIRECTORY}/${PROJECT_NAME}
 	@cp -r templates ${BINARIES_DIRECTORY}/templates
 	@echo "...done"
+
+build-docker: clean _mkdir
+	@echo "  > Build project for docker ${PROJECT_NAME} ..."
+	@CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o ${BINARIES_DIRECTORY}/${PROJECT_NAME}
+	@cp -r templates ${BINARIES_DIRECTORY}/templates
+	@echo "...done"
