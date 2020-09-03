@@ -1,6 +1,7 @@
 package config
 
 import (
+	"go.mongodb.org/mongo-driver/x/mongo/driver/address"
 	"enigma/storage"
 	"fmt"
 	"log"
@@ -47,9 +48,13 @@ func GetEnvStorage(key string, fault string) storage.SecretStorage {
 		value = fault
 	}
 	switch value {
-	case "Memory":
+	case "Redis":
 		{
-			st := storage.NewMemoryStorage()
+			st := storage.NewRedisStorage(
+				GetEnv("REDIS_ADDRESS", "localhost:6379"),
+				GetEnv("REDIS_PASSWORD", ""),
+				GetEnvInt("REDIS_DATABASE", 0),
+			)
 			return &st
 		}
 	default:

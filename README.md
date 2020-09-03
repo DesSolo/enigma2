@@ -14,12 +14,19 @@ docker run --rm -p 9000:9000 dessolo/enigma2:latest
 |UNIQ_KEY_RETRIES|3|_how many times to try to keep a secret in storage_|
 |RESPONSE_ADDRESS|http://127.0.0.1:9000|_the server returns the full path to seret, specify the address_|
 |SECRET_STORAGE|Memory|_where to keep secrets_|
+|Redis storage|
+|REDIS_ADDRESS|localhost:6379|_redis server address_|
+|REDIS_PASSWORD|_empty_|_redis server password_|
+|REDIS_DATABASE|0|_redis server database_|
 
 #### Avalible secret storages
 ##### Memory
+_val_ *Memory*  
 Keeping all secrets in memory
-> :warning: **Attention! not for productions use!!!**: Use another storages, lile redis
-
+> :warning: **Attention! not for productions use!!!**: Use another storages, like redis
+##### Redis
+_val_ *Redis*  
+> Env: REDIS_ADDRESS REDIS_PASSWORD REDIS_DATABASE
 #### Build project
 ##### docker
 ```shell
