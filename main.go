@@ -14,32 +14,8 @@ const (
 	awaitStorageSleep = 1 // sleep in seconds betwin wait attempts
 )
 
-// Config ...
+// Config ... global config variable for main pakage
 var Config = config.New()
-
-// GetSecret ...
-func GetSecret(s storage.SecretStorage, key string) (string, error) {
-	secret, err := s.Get(key)
-	if err != nil {
-		return "", err
-	}
-	if err := s.Delete(key); err != nil {
-		return "", err
-	}
-	return secret, nil
-}
-
-// SaveSecret ...
-func SaveSecret(s storage.SecretStorage, message string, dues int) (string, error) {
-	token, err := GenerateUniqToken(s, Config.UniqKeyRetries)
-	if err != nil {
-		return "", nil
-	}
-	if err := s.Save(token, message, dues); err != nil {
-		return "" , err
-	}
-	return token, nil
-}
 
 func awaitSecretStorage(s storage.SecretStorage) error {
 	for i:=0; i<awaitStorageRetries; i++ {

@@ -32,7 +32,7 @@ docker run --rm -p 9000:9000 dessolo/enigma2:latest
 ##### Memory
 _val_ *Memory*  
 Keeping all secrets in memory
-> :warning: **Attention! not for productions use!!!**: Choose another storages, like redis
+> :warning: **Attention! not for productions use!!!**: old secrets are removed only on request, please choose another storages, like redis
 ##### Redis
 _val_ *Redis*  
 > Env: REDIS_ADDRESS, REDIS_PASSWORD, REDIS_DATABASE,

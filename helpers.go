@@ -56,3 +56,27 @@ func GenerateToken(bytes int) (string, error) {
 	}
 	return fmt.Sprintf("%x", b), nil
 }
+
+// GetSecret ...
+func GetSecret(s storage.SecretStorage, key string) (string, error) {
+	secret, err := s.Get(key)
+	if err != nil {
+		return "", err
+	}
+	if err := s.Delete(key); err != nil {
+		return "", err
+	}
+	return secret, nil
+}
+
+// SaveSecret ...
+func SaveSecret(s storage.SecretStorage, message string, dues int) (string, error) {
+	token, err := GenerateUniqToken(s, Config.UniqKeyRetries)
+	if err != nil {
+		return "", nil
+	}
+	if err := s.Save(token, message, dues); err != nil {
+		return "" , err
+	}
+	return token, nil
+}
