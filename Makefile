@@ -12,4 +12,5 @@ clean:
 build: clean _mkdir
 	@echo "  > Build project ${PROJECT_NAME} ..."
 	@go build -o ${BINARIES_DIRECTORY}/${PROJECT_NAME}
+	@cp -r templates ${BINARIES_DIRECTORY}/templates
 	@echo "...done"
