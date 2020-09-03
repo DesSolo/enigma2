@@ -7,14 +7,17 @@ docker run --rm -p 9000:9000 dessolo/enigma2:latest
 ```
 
 #### Environments variables
+##### Global
 |Env variable|Default value|Description|
 |---|---|---|
 |LISTEN_PORT|9000|_server listen port_|
 |TOKEN_BYTES|20|_lenght of url secret hash_|
 |UNIQ_KEY_RETRIES|3|_how many times to try to keep a secret in storage_|
 |RESPONSE_ADDRESS|http://127.0.0.1:9000|_the server returns the full path to seret, specify the address_|
-|SECRET_STORAGE|Memory|_where to keep secrets_|
-|Redis storage|
+|SECRET_STORAGE|Memory|_where to keep secrets_ (see [avalible secret storages](https://github.com/DesSolo/enigma2#avalible-secret-storages))|
+##### Redis storage
+|Env variable|Default value|Description|
+|---|---|---|
 |REDIS_ADDRESS|localhost:6379|_redis server address_|
 |REDIS_PASSWORD|_empty_|_redis server password_|
 |REDIS_DATABASE|0|_redis server database_|
@@ -54,3 +57,9 @@ podman run --rm --name="enigma" -p 9000:9000 localhost/enigma
 ```shell
 ./enigma
 ```
+
+#### Customisation
+You can change the [html templates](https://github.com/DesSolo/enigma2/tree/master/templates) to suit your needs.  
+[index.html](https://github.com/DesSolo/enigma2/blob/master/templates/index.html) - _main page_  
+[get.html](https://github.com/DesSolo/enigma2/blob/master/templates/get.html) - _rendered when a secret is requested_  
+> :warning: **get.html must contain "%s" to insert the secret into the template**
