@@ -11,8 +11,10 @@ Simple online solution to transfer disposable links, like [onetimesecret.com](on
 |SECRET_STORAGE|Memory|_where to keep secrets_|
 
 #### Avalible secret storages
-Memory
-
+##### Memory
+Keeping all secrets in memory
+> :warning: **Attention! not for productions use!!!**: Use another storages, lile redis
+ 
 #### Build image
 ##### docker
 ```shell
