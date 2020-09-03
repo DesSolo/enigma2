@@ -26,7 +26,7 @@ Keeping all secrets in memory
 > :warning: **Attention! not for productions use!!!**: Use another storages, like redis
 ##### Redis
 _val_ *Redis*  
-> Env: REDIS_ADDRESS REDIS_PASSWORD REDIS_DATABASE
+> Env: REDIS_ADDRESS, REDIS_PASSWORD, REDIS_DATABASE,
 #### Build project
 ##### docker
 ```shell

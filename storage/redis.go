@@ -13,6 +13,14 @@ type RedisStorage struct {
 	client *r.Client
 }
 
+// IsReady ...
+func (s *RedisStorage) IsReady() (bool, error) {
+	if err := s.client.Ping(ctx).Err(); err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
 // Get ...
 func (s *RedisStorage) Get(key string) (string, error) {
 	val, err := s.client.Get(ctx, key).Result()

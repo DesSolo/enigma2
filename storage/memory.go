@@ -13,6 +13,11 @@ type MemoryStorage struct {
 	secrets map[string]*MemorySecret
 }
 
+// IsReady ...
+func (s *MemoryStorage) IsReady() (bool, error) {
+	return true, nil
+} 
+
 // Get ...
 func (s *MemoryStorage) Get(key string) (string, error) {
 	secret, ok := s.secrets[key]

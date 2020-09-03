@@ -1,7 +1,6 @@
 package config
 
 import (
-	"go.mongodb.org/mongo-driver/x/mongo/driver/address"
 	"enigma/storage"
 	"fmt"
 	"log"
