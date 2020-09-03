@@ -1,4 +1,10 @@
 ### ENIGMA
+![Docker Cloud Automated build](https://img.shields.io/docker/cloud/automated/dessolo/enigma2)
+![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/dessolo/enigma2)
+![Docker Pulls](https://img.shields.io/docker/pulls/dessolo/enigma2)
+![Docker Image Version (latest by date)](https://img.shields.io/docker/v/dessolo/enigma2)
+![GitHub](https://img.shields.io/github/license/dessolo/enigma2)
+
 Simple online solution to transfer disposable links, like [onetimesecret.com](onetimesecret.com)
 
 ### Run example
@@ -26,7 +32,7 @@ docker run --rm -p 9000:9000 dessolo/enigma2:latest
 ##### Memory
 _val_ *Memory*  
 Keeping all secrets in memory
-> :warning: **Attention! not for productions use!!!**: Use another storages, like redis
+> :warning: **Attention! not for productions use!!!**: Choose another storages, like redis
 ##### Redis
 _val_ *Redis*  
 > Env: REDIS_ADDRESS, REDIS_PASSWORD, REDIS_DATABASE,
