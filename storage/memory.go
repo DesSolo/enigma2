@@ -4,7 +4,7 @@ import "time"
 
 // MemorySecret ...
 type MemorySecret struct {
-	text string
+	text   string
 	expire time.Time
 }
 
@@ -16,7 +16,7 @@ type MemoryStorage struct {
 // IsReady ...
 func (s *MemoryStorage) IsReady() (bool, error) {
 	return true, nil
-} 
+}
 
 // Get ...
 func (s *MemoryStorage) Get(key string) (string, error) {
@@ -35,7 +35,7 @@ func (s *MemoryStorage) Get(key string) (string, error) {
 func (s *MemoryStorage) Save(key string, message string, dues int) error {
 	ttl := time.Duration(dues) * (24 * time.Hour)
 	s.secrets[key] = &MemorySecret{
-		text: message,
+		text:   message,
 		expire: time.Now().Add(ttl),
 	}
 	return nil

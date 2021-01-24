@@ -1,9 +1,10 @@
 package storage
 
 import (
-	"time"
 	"context"
-	r"github.com/go-redis/redis"
+	"time"
+
+	r "github.com/go-redis/redis"
 )
 
 var ctx = context.Background()
@@ -62,9 +63,9 @@ func (s *RedisStorage) IsUniq(key string) (bool, error) {
 // NewRedisStorage ... addr localhost:6379, password "", database 0
 func NewRedisStorage(addr, password string, database int) RedisStorage {
 	client := r.NewClient(&r.Options{
-        Addr:     addr,
-        Password: password,
-        DB:       database,
-    })
+		Addr:     addr,
+		Password: password,
+		DB:       database,
+	})
 	return RedisStorage{client}
 }

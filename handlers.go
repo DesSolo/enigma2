@@ -10,18 +10,18 @@ import (
 
 var (
 	templateIndex = LoadTemplate("templates/index.html")
-	templateGet = LoadTemplate("templates/get.html")
+	templateGet   = LoadTemplate("templates/get.html")
 
 	viewURLPattern = GenRegexpGetView()
 )
 
-func indexHandler(w http.ResponseWriter, r *http.Request)  {
+func indexHandler(w http.ResponseWriter, r *http.Request) {
 	if _, err := w.Write(templateIndex); err != nil {
 		log.Println("error return response err:", err)
 	}
 }
 
-func createHandler(w http.ResponseWriter, r *http.Request)  {
+func createHandler(w http.ResponseWriter, r *http.Request) {
 	msgFormValue := r.FormValue("msg")
 	dueFormValue := r.FormValue("due")
 	if len(msgFormValue) == 0 || len(dueFormValue) == 0 || len(msgFormValue) >= 65535 {

@@ -10,11 +10,11 @@ import (
 
 // Config ...
 type Config struct {
-	ListenPort int
-	TokenBytes int
-	UniqKeyRetries int
+	ListenPort      int
+	TokenBytes      int
+	UniqKeyRetries  int
 	ResponseAddress string
-	SecretStorage storage.SecretStorage
+	SecretStorage   storage.SecretStorage
 }
 
 // GetEnv ...

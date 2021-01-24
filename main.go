@@ -1,24 +1,24 @@
 package main
 
 import (
-	"time"
 	"enigma/config"
 	"enigma/storage"
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 )
 
-const ( 
+const (
 	awaitStorageRetries = 10 // wait resties storage
-	awaitStorageSleep = 1 // sleep in seconds betwin wait attempts
+	awaitStorageSleep   = 1  // sleep in seconds betwin wait attempts
 )
 
 // Config ... global config variable for main pakage
 var Config = config.New()
 
 func awaitSecretStorage(s storage.SecretStorage) error {
-	for i:=0; i<awaitStorageRetries; i++ {
+	for i := 0; i < awaitStorageRetries; i++ {
 		ready, err := s.IsReady()
 		if ready {
 			return nil
@@ -44,7 +44,7 @@ func main() {
 	log.Printf(
 		"service started port: %d response_address: %s token_bytes: %d\n",
 		Config.ListenPort, Config.ResponseAddress, Config.TokenBytes,
-		)
+	)
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", Config.ListenPort), nil); err != nil {
 		log.Fatal(err)
 	}

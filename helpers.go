@@ -12,7 +12,7 @@ import (
 
 // GenRegexpGetView ...
 func GenRegexpGetView() *regexp.Regexp {
-	p := fmt.Sprintf("^/get/(\\w{%d})$", Config.TokenBytes * 2)
+	p := fmt.Sprintf("^/get/(\\w{%d})$", Config.TokenBytes*2)
 	return regexp.MustCompile(p)
 
 }
@@ -40,7 +40,7 @@ func GenerateUniqToken(s storage.SecretStorage, retries int) (string, error) {
 		if uniq == true {
 			return key, nil
 		}
-		if i >= (retries-1) {
+		if i >= (retries - 1) {
 			break
 		}
 	}
@@ -76,7 +76,7 @@ func SaveSecret(s storage.SecretStorage, message string, dues int) (string, erro
 		return "", nil
 	}
 	if err := s.Save(token, message, dues); err != nil {
-		return "" , err
+		return "", err
 	}
 	return token, nil
 }

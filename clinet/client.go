@@ -10,13 +10,13 @@ import (
 	"strconv"
 )
 
+// ServerAddress ...
 const ServerAddress = "http://127.0.0.1:9000/post/"
-
 
 func sendEnigma(msg string, due int) (string, error) {
 	data := url.Values{
-		"msg": {msg},
-		"due": {strconv.Itoa(due)},
+		"msg":  {msg},
+		"due":  {strconv.Itoa(due)},
 		"send": {"send"},
 		"type": {"text"},
 	}
@@ -31,7 +31,6 @@ func sendEnigma(msg string, due int) (string, error) {
 	return string(body), nil
 }
 
-
 func main() {
 	var dues, copies int
 	flag.IntVar(&dues, "d", 1, "How many days to keep the message 1..4")
@@ -41,7 +40,7 @@ func main() {
 	if (dues < 1) && (dues > 4) {
 		log.Fatalln("Due must be within 1...4")
 	}
-	if copies <=0 {
+	if copies <= 0 {
 		log.Fatalln("Copies must be great 0")
 	}
 
