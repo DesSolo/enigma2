@@ -1,13 +1,10 @@
 package storage
 
 import (
-	"context"
 	"time"
 
 	r "github.com/go-redis/redis"
 )
-
-var ctx = context.Background()
 
 // RedisStorage ...
 type RedisStorage struct {
@@ -16,7 +13,7 @@ type RedisStorage struct {
 
 // IsReady ...
 func (s *RedisStorage) IsReady() (bool, error) {
-	if err := s.client.Ping(ctx).Err(); err != nil {
+	if err := s.client.Ping().Err(); err != nil {
 		return false, err
 	}
 	return true, nil
@@ -24,7 +21,7 @@ func (s *RedisStorage) IsReady() (bool, error) {
 
 // Get ...
 func (s *RedisStorage) Get(key string) (string, error) {
-	val, err := s.client.Get(ctx, key).Result()
+	val, err := s.client.Get(key).Result()
 	if err != nil {
 		return "", err
 	}
@@ -34,7 +31,7 @@ func (s *RedisStorage) Get(key string) (string, error) {
 // Save ...
 func (s *RedisStorage) Save(key string, message string, dues int) error {
 	ttl := time.Duration(dues) * (24 * time.Hour)
-	if err := s.client.Set(ctx, key, message, ttl).Err(); err != nil {
+	if err := s.client.Set(key, message, ttl).Err(); err != nil {
 		return err
 	}
 	return nil
@@ -42,7 +39,7 @@ func (s *RedisStorage) Save(key string, message string, dues int) error {
 
 // Delete ...
 func (s *RedisStorage) Delete(key string) error {
-	if err := s.client.Del(ctx, key).Err(); err != nil {
+	if err := s.client.Del(key).Err(); err != nil {
 		return err
 	}
 	return nil
@@ -50,7 +47,7 @@ func (s *RedisStorage) Delete(key string) error {
 
 // IsUniq ...
 func (s *RedisStorage) IsUniq(key string) (bool, error) {
-	val, err := s.client.Exists(ctx, key).Result()
+	val, err := s.client.Exists(key).Result()
 	if err != nil {
 		return false, err
 	}
