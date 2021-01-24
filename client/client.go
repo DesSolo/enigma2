@@ -23,7 +23,7 @@ func sendEnigma(addr, msg string, due int) (string, error) {
 	}
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return "", nil
+		return "", err
 	}
 	return string(body), nil
 }
@@ -33,6 +33,7 @@ func main() {
 		serverAddress string
 		dues, copies  int
 	)
+	
 	flag.StringVar(&serverAddress, "s", "http://127.0.0.1:9000", "Server address")
 	flag.IntVar(&dues, "d", 1, "How many days to keep the message 1..4")
 	flag.IntVar(&copies, "c", 1, "How many times to copy messages 1...")
