@@ -8,7 +8,11 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 )
+
+// UserAgent ...
+const UserAgent = "enigma-client"
 
 func sendEnigma(addr, msg string, due int) (string, error) {
 	data := url.Values{
@@ -17,14 +21,24 @@ func sendEnigma(addr, msg string, due int) (string, error) {
 		"send": {"send"},
 		"type": {"text"},
 	}
-	resp, err := http.PostForm(addr+"/post/", data)
+	req, err := http.NewRequest(http.MethodPost, addr+"/post/", strings.NewReader(data.Encode()))
 	if err != nil {
 		return "", err
 	}
+
+	req.Header.Set("User-Agent", UserAgent)
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return "", err
+	}
+
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
 	}
+
 	return string(body), nil
 }
 
