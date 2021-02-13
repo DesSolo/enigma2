@@ -35,6 +35,7 @@ func GetEnvStorage(key string, fault string) storage.SecretStorage {
 	if len(value) == 0 {
 		value = fault
 	}
+
 	switch value {
 	case "Redis":
 		return redis.NewStorage(

@@ -1,6 +1,7 @@
 package redis
 
 import (
+	"fmt"
 	"time"
 
 	r "github.com/go-redis/redis"
@@ -22,6 +23,11 @@ func NewStorage(addr, password string, database int) *Storage {
 	return &Storage{
 		client: client,
 	}
+}
+
+// GetInfo ...
+func (s *Storage) GetInfo() string {
+	return fmt.Sprintf("Redis addr: %s db: %d", s.client.Options().Addr, s.client.Options().DB)
 }
 
 // IsReady ...

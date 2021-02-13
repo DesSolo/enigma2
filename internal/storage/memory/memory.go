@@ -19,6 +19,11 @@ func NewStorage() *Storage {
 	}
 }
 
+// GetInfo ...
+func (s *Storage) GetInfo() string {
+	return "Memory"
+}
+
 // IsReady ...
 func (s *Storage) IsReady() (bool, error) {
 	return true, nil

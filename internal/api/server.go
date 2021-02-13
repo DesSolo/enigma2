@@ -18,6 +18,8 @@ func Run(config *config.ServerConfig) error {
 	sConfig = config
 	sStorage = config.SecretStorage
 
+	log.Printf("currently used storage: %s", sStorage.GetInfo())
+
 	viewURLPattern = genRegexpGetView(sConfig.TokenBytes)
 	templateIndex = loadTemplate("templates/index.html")
 	templateGet = loadTemplate("templates/get.html")
