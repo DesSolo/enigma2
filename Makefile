@@ -26,8 +26,8 @@ build-docker: clean _static
 
 tag:
 ifeq (${VERSION},$(shell git describe --abbrev=0))
-        $(error Last tag and curent version ${VERSION} conflict)
+	$(error Last tag and curent version ${VERSION} conflict)
 else
-        git tag -a ${VERSION} -m 'Bump Version ${VERSION}'
-        git push --tags
+	git tag -a ${VERSION} -m 'Bump Version ${VERSION}'
+	git push --tags
 endif
