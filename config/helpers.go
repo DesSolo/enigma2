@@ -22,7 +22,7 @@ func GetEnvInt(key string, fault int) int {
 	if len(value) == 0 {
 		return fault
 	}
-	v, err := strconv.Atoi(key)
+	v, err := strconv.Atoi(value)
 	if err != nil {
 		log.Fatal(err)
 	}
