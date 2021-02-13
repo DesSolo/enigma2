@@ -1,0 +1,6 @@
+# https://user-agents.net/bots
+
+map $http_user_agent $bad_ua {
+        default         0;
+        ~*bot           1;
+}

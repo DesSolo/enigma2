@@ -1,0 +1,18 @@
+version: 3
+services:
+  nginx:
+    image: nginx:stable-alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/:/etc/nginx/conf.d/:z
+  
+  redis:
+    image: redis:6.0.10-alpine
+
+  enigma2:
+    image: dessolo/enigma2:1.0.4
+    environment:
+      - RESPONSE_ADDRESS=http://127.0.0.1:8080
+      - SECRET_STORAGE=redis
+      - REDIS_ADDRESS=redis:6379
