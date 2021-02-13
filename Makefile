@@ -13,7 +13,7 @@ clean:
 	rm -rf ${BINARIES_DIRECTORY}
 
 build-server: clean _static
-	go build -ldflags ${LDFLAGS} -o ${BINARIES_DIRECTORY}/${PROJECT_NAME} cmd/server/main.go
+	go build -ldflags ${LDFLAGS} -o ${BINARIES_DIRECTORY}/${PROJECT_NAME}_server_linux_x64 cmd/server/main.go
 
 build-client: clean
 	GOOS=linux GOARCH=amd64 go build -ldflags ${LDFLAGS} -o ${BINARIES_DIRECTORY}/${PROJECT_NAME}_client_linux_x64 cmd/client/main.go

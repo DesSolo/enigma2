@@ -5,7 +5,7 @@
 ![Docker Image Version (latest by date)](https://img.shields.io/docker/v/dessolo/enigma2)
 ![GitHub](https://img.shields.io/github/license/dessolo/enigma2)
 
-Simple online solution to transfer disposable links, like [onetimesecret.com](onetimesecret.com)
+Simple online solution to transfer disposable links, like [onetimesecret.com](http://onetimesecret.com)
 
 ### Run example
 ```shell
@@ -17,10 +17,10 @@ docker run --rm -p 9000:9000 dessolo/enigma2:latest
 |Env variable|Default value|Description|
 |---|---|---|
 |LISTEN_PORT|9000|_server listen port_|
-|TOKEN_BYTES|20|_lenght of url secret hash_|
+|TOKEN_BYTES|20|_length of url secret hash_|
 |UNIQ_KEY_RETRIES|3|_how many times to try to keep a secret in storage_|
-|RESPONSE_ADDRESS|http://127.0.0.1:9000|_the server returns the full path to seret, specify the address_|
-|SECRET_STORAGE|Memory|_where to keep secrets_ (see [avalible secret storages](https://github.com/DesSolo/enigma2#avalible-secret-storages))|
+|RESPONSE_ADDRESS|http://127.0.0.1:9000|_the server returns the full path to secret, specify the address_|
+|SECRET_STORAGE|Memory|_where to keep secrets_ (see [available secret storages](https://github.com/DesSolo/enigma2#avalible-secret-storages))|
 ##### Redis storage
 |Env variable|Default value|Description|
 |---|---|---|
@@ -28,7 +28,7 @@ docker run --rm -p 9000:9000 dessolo/enigma2:latest
 |REDIS_PASSWORD|_empty_|_redis server password_|
 |REDIS_DATABASE|0|_redis server database_|
 
-#### Avalible secret storages
+#### Available secret storages
 ##### Memory
 _val_ *Memory*  
 Keeping all secrets in memory
