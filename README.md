@@ -7,7 +7,10 @@
 
 Simple online solution to transfer disposable links, like [onetimesecret.com](http://onetimesecret.com)
 
-### Run example
+### Demo
+https://enigma2-example.herokuapp.com
+
+### Run container
 ```shell
 docker run --rm -p 9000:9000 dessolo/enigma2:latest
 ```
