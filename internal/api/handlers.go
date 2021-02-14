@@ -53,10 +53,10 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 func viewHandler(w http.ResponseWriter, r *http.Request) {
 	key := viewURLPattern.FindStringSubmatch(r.URL.Path)
 	if len(key) == 0 {
-		log.Println("url get miss match")
 		raiseError(w, http.StatusNotFound)
 		return
 	}
+
 	secret, err := getSecret(sStorage, key[1])
 	if err != nil {
 		log.Println("error get secret err:", err)
@@ -67,6 +67,7 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
 		raiseError(w, http.StatusNotFound)
 		return
 	}
+
 	if _, err := fmt.Fprintf(w, string(templateGet), html.EscapeString(secret)); err != nil {
 		log.Println("error return response err:", err)
 		raiseError(w, http.StatusInternalServerError)
