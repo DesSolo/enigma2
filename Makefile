@@ -12,6 +12,12 @@ _static:
 clean:
 	rm -rf ${BINARIES_DIRECTORY}
 
+test:
+	go test ./...
+
+vet:
+	go vet ./...
+
 build-server: clean _static
 	go build -ldflags ${LDFLAGS} -o ${BINARIES_DIRECTORY}/${PROJECT_NAME}_server_linux_x64 cmd/server/main.go
 
