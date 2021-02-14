@@ -3,4 +3,4 @@ build:
     web: Dockerfile
 
 run:
-  web: LISTEN_PORT=$PORT RESPONSE_ADDRESS=https://enigma2-example.herokuapp.com ./enigma
+  web: LISTEN_PORT=$PORT SECRET_STORAGE=Memory RESPONSE_ADDRESS=https://enigma2-example.herokuapp.com ./enigma
