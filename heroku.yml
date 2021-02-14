@@ -1,0 +1,6 @@
+build:
+  docker:
+    web: Dockerfile
+
+run:
+  web: LISTEN_PORT=$PORT RESPONSE_ADDRESS=https://enigma2-example.herokuapp.com ./enigma
