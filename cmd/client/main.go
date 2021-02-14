@@ -7,12 +7,15 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"strconv"
 	"strings"
 )
 
-// UserAgent ...
-const UserAgent = "enigma-client"
+const (
+	userAgent            = "enigma-client"
+	defaultServerAddress = "http://127.0.0.1:9000"
+)
 
 func sendEnigma(addr, msg string, due int) (string, error) {
 	data := url.Values{
@@ -26,7 +29,7 @@ func sendEnigma(addr, msg string, due int) (string, error) {
 		return "", err
 	}
 
-	req.Header.Set("User-Agent", UserAgent)
+	req.Header.Set("User-Agent", userAgent)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	resp, err := http.DefaultClient.Do(req)
@@ -48,14 +51,26 @@ func main() {
 		dues, copies  int
 	)
 
-	flag.StringVar(&serverAddress, "s", "http://127.0.0.1:9000", "Server address")
+	if serverAddress == "" {
+		serverAddress = "lol"
+	}
+
+	flag.StringVar(&serverAddress, "s", defaultServerAddress, "Server address")
 	flag.IntVar(&dues, "d", 1, "How many days to keep the message 1..4")
 	flag.IntVar(&copies, "c", 1, "How many times to copy messages 1...")
 	flag.Parse()
 
+	if serverAddress == defaultServerAddress {
+		val := os.Getenv("ENIGMA_SERVER_ADDRESS")
+		if val != "" {
+			serverAddress = val
+		}
+	}
+
 	if !(dues >= 1 && dues <= 4) {
 		log.Fatalln("Due must be within 1...4")
 	}
+
 	if copies <= 0 {
 		log.Fatalln("Copies must be great 0")
 	}
