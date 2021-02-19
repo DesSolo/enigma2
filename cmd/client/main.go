@@ -15,6 +15,7 @@ import (
 const (
 	userAgent            = "enigma-client"
 	defaultServerAddress = "http://127.0.0.1:9000"
+	envServerAddressKey  = "ENIGMA_SERVER_ADDRESS"
 )
 
 func sendEnigma(addr, msg string, due int) (string, error) {
@@ -55,16 +56,21 @@ func main() {
 		serverAddress = "lol"
 	}
 
-	flag.StringVar(&serverAddress, "s", defaultServerAddress, "Server address")
+	flag.StringVar(&serverAddress, "s", defaultServerAddress, fmt.Sprintf("Server address. Сan be specified from env \"%s\"", envServerAddressKey))
 	flag.IntVar(&dues, "d", 1, "How many days to keep the message 1..4")
 	flag.IntVar(&copies, "c", 1, "How many times to copy messages 1...")
 	flag.Parse()
 
 	if serverAddress == defaultServerAddress {
-		val := os.Getenv("ENIGMA_SERVER_ADDRESS")
+		val := os.Getenv(envServerAddressKey)
 		if val != "" {
 			serverAddress = val
 		}
+	}
+
+	if len(flag.Args()) == 0 {
+		flag.Usage()
+		os.Exit(1)
 	}
 
 	if !(dues >= 1 && dues <= 4) {
