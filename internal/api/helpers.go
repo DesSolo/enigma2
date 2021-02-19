@@ -103,7 +103,7 @@ func getSecret(s storage.SecretStorage, key string) (string, error) {
 func saveSecret(s storage.SecretStorage, message string, dues int) (string, error) {
 	token, err := generateUniqToken(sConfig.UniqKeyRetries)
 	if err != nil {
-		return "", nil
+		return "", err
 	}
 
 	if err := s.Save(token, message, dues); err != nil {
