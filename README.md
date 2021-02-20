@@ -10,6 +10,9 @@ Simple online solution to transfer disposable links, like [onetimesecret.com](ht
 ### Demo
 https://enigma2-example.herokuapp.com
 
+### Examples
+see [deployments](https://github.com/DesSolo/enigma2/tree/master/deployments/) examples
+
 ### Run container
 ```shell
 docker run --rm -p 9000:9000 dessolo/enigma2:latest
@@ -33,11 +36,11 @@ docker run --rm -p 9000:9000 dessolo/enigma2:latest
 
 #### Available secret storages
 ##### Memory
-_val_ *Memory*  
+_val:_ *Memory*  
 Keeping all secrets in memory
 > :warning: **Attention! not for productions use!!!**: old secrets are removed only on request, please choose another storages, like redis
 ##### Redis
-_val_ *Redis*  
+_val:_ *Redis*  
 > Env: REDIS_ADDRESS, REDIS_PASSWORD, REDIS_DATABASE,
 #### Build project
 ##### docker
@@ -57,10 +60,6 @@ make build
 ##### docker
 ```shell
 docker run --rm --name="enigma" -p 9000:9000 localhost/enigma
-```
-##### podman
-```shell
-podman run --rm --name="enigma" -p 9000:9000 localhost/enigma
 ```
 #### binary
 ```shell
