@@ -25,6 +25,15 @@ vet:
 build-server: clean _static
 	go build -ldflags ${LDFLAGS} -o ${BINARIES_DIRECTORY}/${PROJECT_NAME}_server_linux_x64 cmd/server/main.go
 
+## build-server-tar: Build server and compress to tar.gz
+build-server-tar: build-server
+	for filename in ${BINARIES_DIRECTORY}/enigma_server* ; do \
+		echo "  > start compress $$filename ..." ; \
+		tar -zcvf $$filename.tar.gz $$filename ${BINARIES_DIRECTORY}/templates ; \
+		rm $$filename ;\
+		echo "  > ... done" ; \
+	done
+
 ## build-client: Build enigma client
 build-client: clean
 	GOOS=linux GOARCH=amd64 go build -ldflags ${LDFLAGS} -o ${BINARIES_DIRECTORY}/${PROJECT_NAME}_client_linux_x64 cmd/client/main.go
@@ -47,7 +56,7 @@ else
 endif
 
 ## upload-github: Add binary to github releases
-upload-github: build-all
+upload-github: build-server-tar build-client
 	@bash scripts/upload-github-release-asset.sh github_api_token=${GITHUB_API_TOKEN} owner=DesSolo repo=enigma2 tag=${VERSION} files=./${BINARIES_DIRECTORY}/*
 
 ## help: Show this message and exit
