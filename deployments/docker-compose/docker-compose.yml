@@ -11,7 +11,7 @@ services:
     image: redis:6.0.10-alpine
 
   enigma2:
-    image: dessolo/enigma2:1.0.8
+    image: dessolo/enigma2:1.0.9
     environment:
       - RESPONSE_ADDRESS=http://127.0.0.1:8080
       - SECRET_STORAGE=Redis
