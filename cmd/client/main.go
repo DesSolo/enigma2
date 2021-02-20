@@ -52,11 +52,7 @@ func main() {
 		serverAddress string
 		dues, copies  int
 	)
-
-	if serverAddress == "" {
-		serverAddress = "lol"
-	}
-
+	
 	flag.StringVar(&serverAddress, "s", defaultServerAddress, fmt.Sprintf("Server address. Сan be specified from env \"%s\"", envServerAddressKey))
 	flag.IntVar(&dues, "d", 1, "How many days to keep the message 1..4")
 	flag.IntVar(&copies, "c", 1, "How many times to copy messages 1...")
