@@ -1,6 +1,6 @@
 PROJECT_NAME = $(shell basename "$(PWD)")
 BINARIES_DIRECTORY = bin
-VERSION = $(shell cat VERSION)
+VERSION ?= $(shell cat VERSION)
 LDFLAGS = "-w -s"
 
 .DEFAULT_GOAL := help
@@ -23,7 +23,7 @@ vet:
 
 ## build-server: Build enigma server
 build-server: clean _static
-	go build -ldflags ${LDFLAGS} -o ${BINARIES_DIRECTORY}/${PROJECT_NAME}_server_linux_x64 cmd/server/main.go
+	go build -ldflags ${LDFLAGS} -o ${BINARIES_DIRECTORY}/${PROJECT_NAME}_server_${VERSION}_linux_x64 cmd/server/main.go
 
 ## build-server-tar: Build server and compress to tar.gz
 build-server-tar: build-server
@@ -36,8 +36,8 @@ build-server-tar: build-server
 
 ## build-client: Build enigma client
 build-client: clean
-	GOOS=linux GOARCH=amd64 go build -ldflags ${LDFLAGS} -o ${BINARIES_DIRECTORY}/${PROJECT_NAME}_client_linux_x64 cmd/client/main.go
-	GOOS=windows GOARCH=amd64 go build -ldflags ${LDFLAGS} -o ${BINARIES_DIRECTORY}/${PROJECT_NAME}_client_windows_x64.exe cmd/client/main.go
+	GOOS=linux GOARCH=amd64 go build -ldflags ${LDFLAGS} -o ${BINARIES_DIRECTORY}/${PROJECT_NAME}_client_${VERSION}_linux_x64 cmd/client/main.go
+	GOOS=windows GOARCH=amd64 go build -ldflags ${LDFLAGS} -o ${BINARIES_DIRECTORY}/${PROJECT_NAME}_client_${VERSION}_windows_x64.exe cmd/client/main.go
 
 ## build-all: Build client and server
 build-all: build-server build-client
