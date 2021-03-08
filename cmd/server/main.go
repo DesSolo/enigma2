@@ -1,15 +1,15 @@
 package main
 
 import (
-	"enigma/config"
 	"enigma/internal/api"
+	"enigma/internal/config"
 	"log"
 )
 
 func main() {
-	config := config.NewSeverConfig()
+	cfg := config.NewSeverConfig()
 
-	if err := api.Run(config); err != nil {
+	if err := api.Run(cfg); err != nil {
 		log.Fatal(err)
 	}
 }

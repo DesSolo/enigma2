@@ -1,7 +1,7 @@
 package api
 
 import (
-	"enigma/config"
+	"enigma/internal/config"
 	"enigma/internal/storage"
 	"fmt"
 	"log"
