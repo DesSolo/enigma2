@@ -1,49 +1,57 @@
 package config
 
 import (
-	"enigma/internal/storage"
-	"enigma/internal/storage/memory"
-	"enigma/internal/storage/redis"
-	"fmt"
+	"io/ioutil"
 	"os"
+	"time"
+
+	"gopkg.in/yaml.v3"
 )
+
+const defaultConfigFilePath = "/etc/enigma/config.yml"
 
 // ServerConfig ...
 type ServerConfig struct {
-	ListenPort      int
-	TokenBytes      int
-	UniqKeyRetries  int
-	ResponseAddress string
-	SecretStorage   storage.SecretStorage
+	Server struct {
+		Bind        string `yaml:"bind"`
+		ExternalURL string `yaml:"external_url"`
+		TemplatesPath string `yaml:"templates_path"`
+	} `yaml:"server"`
+	Secrets struct {
+		Storage struct {
+			Type  string `yaml:"type"`
+			Await struct {
+				Retries  int           `yaml:"retries"`
+				Interval time.Duration `yaml:"interval"`
+			} `yaml:"await"`
+		} `yaml:"storage"`
+		Token struct {
+			Length      int `yaml:"lenght"`
+			SaveRetries int `yaml:"save_retries"`
+		} `yaml:"token"`
+	} `yaml:"secrets"`
+	Redis struct {
+		Address  string `yaml:"address"`
+		Password string `yaml:"password"`
+		Database int    `yaml:"database"`
+	} `yaml:"redis"`
 }
 
-// NewSeverConfig ...
-func NewSeverConfig() *ServerConfig {
-	ListenPort := GetEnvInt("LISTEN_PORT", 9000)
-	return &ServerConfig{
-		ListenPort,
-		GetEnvInt("TOKEN_BYTES", 20),
-		GetEnvInt("UNIQ_KEY_RETRIES", 3),
-		GetEnv("RESPONSE_ADDRESS", fmt.Sprintf("http://127.0.0.1:%d", ListenPort)),
-		GetEnvStorage("SECRET_STORAGE", "Memory"),
-	}
-}
-
-// GetEnvStorage ...
-func GetEnvStorage(key string, fault string) storage.SecretStorage {
-	value := os.Getenv(key)
-	if len(value) == 0 {
-		value = fault
+func NewServerConfigFromFile() (*ServerConfig, error) {
+	configFilePath := os.Getenv("CONFIG_FILE_PATH")
+	if configFilePath == "" {
+		configFilePath = defaultConfigFilePath
 	}
 
-	switch value {
-	case "Redis":
-		return redis.NewStorage(
-			GetEnv("REDIS_ADDRESS", "localhost:6379"),
-			GetEnv("REDIS_PASSWORD", ""),
-			GetEnvInt("REDIS_DATABASE", 0),
-		)
-	default:
-		return memory.NewStorage()
+	data, err := ioutil.ReadFile(configFilePath)
+	if err != nil {
+		return nil, err
 	}
+
+	var cfg ServerConfig
+	if err := yaml.Unmarshal(data, &cfg); err != nil {
+		return nil, err
+	}
+
+	return &cfg, nil
 }

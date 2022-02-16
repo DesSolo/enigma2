@@ -8,6 +8,7 @@ LDFLAGS = "-w -s"
 _static:
 	mkdir ${BINARIES_DIRECTORY}
 	cp -r templates ${BINARIES_DIRECTORY}/templates
+	cp examples/config.yml ${BINARIES_DIRECTORY}
 
 ## clean: Clean binaries directory
 clean:
@@ -20,6 +21,10 @@ test:
 ## vet: Run go vet
 vet:
 	go vet ./...
+
+## run: run server with example config
+run-server:
+	CONFIG_FILE_PATH=examples/config.yml go run cmd/server/main.go
 
 ## build-server: Build enigma server
 build-server: clean _static

@@ -1,0 +1,36 @@
+# server settings block
+server:
+  # listen on specified address and port
+  bind: 0.0.0.0:8082
+  # full external url (used as prefix to view secret)
+  external_url: http://localhost:8082
+  # templates path
+  templates_path: templates/ 
+
+# secrets settings block
+secrets:
+  # storage settings
+  storage:
+    # type storage
+    type: memory
+    # waiting for storage to be available on initial application startup
+    await:
+      # how many retries for attempt connect
+      retries: 10
+      # waiting time before trying again
+      interval: "1s"
+  # token settings
+  token:
+    # token length in bytes
+    lenght: 20
+    # maximum uniq save retries
+    save_retries: 3
+
+# redis settings block (required if secrets.stirage.type is "redis")
+redis:
+  # connection address
+  address: 127.0.0.1:6379
+  # connection password
+  password: ""
+  # database number
+  database: 0

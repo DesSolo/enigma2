@@ -38,11 +38,11 @@ func sendEnigma(addr, msg string, due int) (string, error) {
 		return "", err
 	}
 
-	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
 	}
+	defer resp.Body.Close()
 
 	return string(body), nil
 }

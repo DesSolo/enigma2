@@ -1,47 +1,39 @@
 package api
 
 import (
-	"enigma/internal/config"
-	"enigma/internal/storage"
-	"fmt"
-	"log"
+	"enigma/internal/api/service"
 	"net/http"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
-var (
-	sConfig  *config.ServerConfig
-	sStorage storage.SecretStorage
-)
+// Server ...
+type Server struct {
+	secretService *service.SecretService
+	router        *chi.Mux
+}
+
+// NewServer ...
+func NewServer(s *service.SecretService) *Server {
+	return &Server{
+		secretService: s,
+		router:        chi.NewRouter(),
+	}
+}
+
+// LoadHandlers ...
+func (s *Server) LoadHandlers(indexTemplate, viewSecretTemplate []byte, externalURL string) {
+	s.router.Use(middleware.Recoverer)
+	s.router.Use(middleware.RequestID)
+	s.router.Use(middleware.Logger)
+
+	s.router.Get("/", indexHandler(indexTemplate))
+	s.router.Post("/post/", createSecretHandler(s.secretService, externalURL))
+	s.router.Get("/get/{token}", viewSecretHandler(s.secretService, viewSecretTemplate))
+}
 
 // Run ...
-func Run(config *config.ServerConfig) error {
-	sConfig = config
-	sStorage = config.SecretStorage
-
-	log.Printf("currently used storage: %s", sStorage.GetInfo())
-
-	viewURLPattern = genRegexpGetView(sConfig.TokenBytes)
-	templateIndex = loadTemplate("templates/index.html")
-	templateGet = loadTemplate("templates/get.html")
-
-	if err := awaitSecretStorage(sStorage); err != nil {
-		return err
-	}
-
-	http.HandleFunc("/",
-		methodMiddleware("GET", indexHandler),
-	)
-	http.HandleFunc("/post/",
-		methodMiddleware("POST", createHandler),
-	)
-	http.HandleFunc("/get/",
-		methodMiddleware("GET", viewHandler),
-	)
-
-	log.Printf(
-		"service started port: %d response_address: %s token_bytes: %d\n",
-		sConfig.ListenPort, sConfig.ResponseAddress, sConfig.TokenBytes,
-	)
-
-	return http.ListenAndServe(fmt.Sprintf(":%d", sConfig.ListenPort), nil)
+func (s *Server) Run(addr string) error {
+	return http.ListenAndServe(addr, s.router)
 }
