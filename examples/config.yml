@@ -1,9 +1,9 @@
 # server settings block
 server:
   # listen on specified address and port
-  bind: 0.0.0.0:8082
+  bind: 0.0.0.0:9000
   # full external url (used as prefix to view secret)
-  external_url: http://localhost:8082
+  external_url: http://127.0.0.1:9000
   # templates path
   templates_path: templates/ 
 

@@ -1,0 +1,19 @@
+server:
+  bind: 0.0.0.0:9000
+  external_url: http://127.0.0.1:8080
+  templates_path: templates/ 
+
+secrets:
+  storage:
+    type: redis
+    await:
+      retries: 10
+      interval: "1s"
+  token:
+    lenght: 20
+    save_retries: 3
+
+redis:
+  address: redis:6379
+  password: ""
+  database: 0

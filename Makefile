@@ -8,6 +8,8 @@ LDFLAGS = "-w -s"
 _static:
 	mkdir ${BINARIES_DIRECTORY}
 	cp -r templates ${BINARIES_DIRECTORY}/templates
+
+_config:
 	cp examples/config.yml ${BINARIES_DIRECTORY}
 
 ## clean: Clean binaries directory
@@ -22,19 +24,23 @@ test:
 vet:
 	go vet ./...
 
+# tidy: Tun go tidy
+tidy:
+	go mod tidy
+
 ## run: run server with example config
 run-server:
 	CONFIG_FILE_PATH=examples/config.yml go run cmd/server/main.go
 
 ## build-server: Build enigma server
-build-server: clean _static
+build-server: clean _static _config
 	go build -ldflags ${LDFLAGS} -o ${BINARIES_DIRECTORY}/${PROJECT_NAME}_server_${VERSION}_linux_x64 cmd/server/main.go
 
 ## build-server-tar: Build server and compress to tar.gz
 build-server-tar: build-server
-	for filename in ${BINARIES_DIRECTORY}/enigma_server* ; do \
+	for filename in ${BINARIES_DIRECTORY}/enigma2_server* ; do \
 		echo "  > start compress $$filename ..." ; \
-		tar -zcvf $$filename.tar.gz $$filename ${BINARIES_DIRECTORY}/templates ; \
+		tar -zcvf $$filename.tar.gz $$filename ${BINARIES_DIRECTORY}/templates ${BINARIES_DIRECTORY}/config.yml ; \
 		rm $$filename ;\
 		echo "  > ... done" ; \
 	done
