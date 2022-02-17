@@ -1,16 +1,16 @@
 version: 3
 services:
   nginx:
-    image: nginx:stable-alpine
+    image: nginx:1.21.6-alpine
     ports:
       - "8080:80"
     volumes:
       - ./nginx/:/etc/nginx/conf.d/:z
   
   redis:
-    image: redis:6.0.10-alpine
+    image: redis:6.2.6-alpine3.15
 
   enigma:
-    image: dessolo/enigma:1.1.0
+    image: dessolo/enigma2:v1.1.0
     volumes:
       - ./enigma/config.yml:/etc/enigma/config.yml:z
