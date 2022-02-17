@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Update DockerHub description
 
 on:
   push:
@@ -8,9 +8,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+    - name: Checkout
+      uses: actions/checkout@v2.4.0
     - name: Update DockerHub description
       uses: peter-evans/dockerhub-description@v2
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
-        repository: ${{ github.repository }}
+        repository: dessolo/enigma2
