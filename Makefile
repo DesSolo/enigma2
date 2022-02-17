@@ -10,7 +10,8 @@ _static:
 	cp -r templates ${BINARIES_DIRECTORY}/templates
 
 _config:
-	cp examples/config.yml ${BINARIES_DIRECTORY}
+	mkdir ${BINARIES_DIRECTORY}/config
+	cp examples/config.yml ${BINARIES_DIRECTORY}/config/config.yml
 
 ## clean: Clean binaries directory
 clean:
@@ -40,7 +41,7 @@ build-server: clean _static _config
 build-server-tar: build-server
 	for filename in ${BINARIES_DIRECTORY}/enigma2_server* ; do \
 		echo "  > start compress $$filename ..." ; \
-		tar -zcvf $$filename.tar.gz $$filename ${BINARIES_DIRECTORY}/templates ${BINARIES_DIRECTORY}/config.yml ; \
+		tar -zcvf $$filename.tar.gz $$filename ${BINARIES_DIRECTORY}/templates ${BINARIES_DIRECTORY}/config ; \
 		rm $$filename ;\
 		echo "  > ... done" ; \
 	done
