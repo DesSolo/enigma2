@@ -1,6 +1,9 @@
 package memory
 
-import "time"
+import (
+	"sync"
+	"time"
+)
 
 type secret struct {
 	text   string
@@ -10,6 +13,7 @@ type secret struct {
 // Storage ...
 type Storage struct {
 	secrets map[string]*secret
+	mux    sync.RWMutex
 }
 
 // NewStorage ...
@@ -31,6 +35,9 @@ func (s *Storage) IsReady() (bool, error) {
 
 // Get ...
 func (s *Storage) Get(key string) (string, error) {
+	s.mux.RLock()
+	defer s.mux.RUnlock()
+	
 	secret, ok := s.secrets[key]
 	if !ok {
 		return "", nil
@@ -46,6 +53,9 @@ func (s *Storage) Get(key string) (string, error) {
 
 // Save ...
 func (s *Storage) Save(key string, message string, dues int) error {
+	s.mux.Lock()
+	defer s.mux.Unlock()
+
 	ttl := time.Duration(dues) * (24 * time.Hour)
 	s.secrets[key] = &secret{
 		text:   message,
@@ -57,12 +67,18 @@ func (s *Storage) Save(key string, message string, dues int) error {
 
 // Delete ...
 func (s *Storage) Delete(key string) error {
+	s.mux.Lock()
+	defer s.mux.Unlock()
+
 	delete(s.secrets, key)
 	return nil
 }
 
 // IsUniq ...
 func (s *Storage) IsUniq(key string) (bool, error) {
+	s.mux.RLock()
+	defer s.mux.RUnlock()
+
 	_, ok := s.secrets[key]
 	return !ok, nil
 }
