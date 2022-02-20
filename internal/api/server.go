@@ -31,6 +31,8 @@ func (s *Server) LoadHandlers(indexTemplate, viewSecretTemplate []byte, external
 	s.router.Get("/", indexHandler(indexTemplate))
 	s.router.Post("/post/", createSecretHandler(s.secretService, externalURL))
 	s.router.Get("/get/{token}", viewSecretHandler(s.secretService, viewSecretTemplate))
+
+	s.router.Get("/health", healthHandler())
 }
 
 // Run ...

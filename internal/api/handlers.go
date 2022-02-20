@@ -78,3 +78,11 @@ func viewSecretHandler(s *service.SecretService, template []byte) http.HandlerFu
 		}
 	}
 }
+
+func healthHandler() http.HandlerFunc {
+	return func(rw http.ResponseWriter, r *http.Request) {
+		rw.Header().Set("Content-Type", "application/json")
+		rw.WriteHeader(http.StatusOK)
+		rw.Write([]byte(`{"healthy": true}`))
+	}
+}
