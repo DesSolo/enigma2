@@ -53,11 +53,10 @@ func (s *Storage) Get(_ context.Context, key string) (string, error) {
 }
 
 // Save ...
-func (s *Storage) Save(_ context.Context, key string, message string, dues int) error {
+func (s *Storage) Save(_ context.Context, key string, message string, ttl time.Duration) error {
 	s.mux.Lock()
 	defer s.mux.Unlock()
 
-	ttl := time.Duration(dues) * (24 * time.Hour)
 	s.secrets[key] = &secret{
 		text:   message,
 		expire: time.Now().Add(ttl),

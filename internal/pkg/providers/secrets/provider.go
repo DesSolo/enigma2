@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"errors"
 	"fmt"
+	"time"
 
 	"enigma/internal/pkg/storage"
 )
@@ -46,7 +47,8 @@ func (p *Provider) SaveSecret(ctx context.Context, message string, dues int) (st
 
 	// todo make hash!
 
-	if err := p.storage.Save(ctx, token, message, dues); err != nil {
+	ttl := time.Duration(dues) * (24 * time.Hour)
+	if err := p.storage.Save(ctx, token, message, ttl); err != nil {
 		return "", fmt.Errorf("storage.Save: %w", err)
 	}
 

@@ -2,14 +2,17 @@
 
 package storage
 
-import "context"
+import (
+	"context"
+	"time"
+)
 
 // SecretStorage interface
 type SecretStorage interface {
 	GetInfo(ctx context.Context) string
 	IsReady(ctx context.Context) (bool, error)
 	Get(ctx context.Context, key string) (string, error)
-	Save(ctx context.Context, key string, message string, dues int) error
+	Save(ctx context.Context, key string, message string, ttl time.Duration) error
 	Delete(ctx context.Context, key string) error
 	IsUniq(ctx context.Context, key string) (bool, error)
 }

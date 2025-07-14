@@ -51,8 +51,7 @@ func (s *Storage) Get(ctx context.Context, key string) (string, error) {
 }
 
 // Save ...
-func (s *Storage) Save(ctx context.Context, key string, message string, dues int) error {
-	ttl := time.Duration(dues) * (24 * time.Hour)
+func (s *Storage) Save(ctx context.Context, key string, message string, ttl time.Duration) error {
 	if err := s.client.Set(ctx, key, message, ttl).Err(); err != nil {
 		return fmt.Errorf("client.Set: %w", err)
 	}
