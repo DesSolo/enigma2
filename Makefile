@@ -71,6 +71,24 @@ endif
 upload-github: build-server-tar build-client
 	@bash scripts/upload-github-release-asset.sh github_api_token=${GITHUB_API_TOKEN} owner=DesSolo repo=enigma2 tag=${VERSION} files=./${BINARIES_DIRECTORY}/*
 
+LOCAL_BIN := $(CURDIR)/bin
+LINT_VERSION := 2.2.1
+
+.prep_bin:
+	mkdir -p ${LOCAL_BIN}
+
+.install-lint:
+	curl -Ls https://github.com/golangci/golangci-lint/releases/download/v${LINT_VERSION}/golangci-lint-${LINT_VERSION}-linux-amd64.tar.gz | tar xvz --strip-components=1 -C ${LOCAL_BIN} golangci-lint-${LINT_VERSION}-linux-amd64/golangci-lint
+
+## install-deps: install bin dependencies
+install-deps: \
+	.prep_bin \
+	.install-lint
+
+## lint: run linter
+lint: $(LINT_BIN)
+	$(LOCAL_BIN)/golangci-lint run
+
 ## help: Show this message and exit
 help: Makefile
 	@echo
