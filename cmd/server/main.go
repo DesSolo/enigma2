@@ -14,6 +14,8 @@ import (
 	"enigma/internal/pkg/storage"
 	"enigma/internal/pkg/storage/memory"
 	"enigma/internal/pkg/storage/redis"
+
+	goredis "github.com/redis/go-redis/v9"
 )
 
 const (
@@ -33,9 +35,11 @@ func loadSecretStorage(c *config.ServerConfig) (storage.SecretStorage, error) {
 		st = memory.NewStorage()
 	case "redis":
 		st = redis.NewStorage(
-			c.Redis.Address,
-			c.Redis.Password,
-			c.Redis.Database,
+			goredis.NewClient(&goredis.Options{
+				Addr:     c.Redis.Address,
+				Password: c.Redis.Password,
+				DB:       c.Redis.Database,
+			}),
 		)
 	default:
 		return nil, fmt.Errorf("storage type: %s not supported", c.Secrets.Storage.Type)

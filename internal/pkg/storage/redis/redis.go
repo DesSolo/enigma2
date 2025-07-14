@@ -1,3 +1,5 @@
+//go:generate mockery --srcpkg "github.com/redis/go-redis/v9" --case=snake --name UniversalClient
+
 package redis
 
 import (
@@ -10,25 +12,14 @@ import (
 
 // Storage ...
 type Storage struct {
-	client *redis.Client
+	client redis.UniversalClient
 }
 
-// NewStorage ... addr localhost:6379, password "", database 0
-func NewStorage(addr, password string, database int) *Storage {
-	client := redis.NewClient(&redis.Options{
-		Addr:     addr,
-		Password: password,
-		DB:       database,
-	})
-
+// NewStorage ...
+func NewStorage(client redis.UniversalClient) *Storage {
 	return &Storage{
 		client: client,
 	}
-}
-
-// GetInfo ...
-func (s *Storage) GetInfo(_ context.Context) string {
-	return fmt.Sprintf("Redis addr: %s db: %d", s.client.Options().Addr, s.client.Options().DB)
 }
 
 // IsReady ...

@@ -3,7 +3,7 @@ package api
 import (
 	"fmt"
 	"html"
-	"log"
+	"log/slog"
 	"net/http"
 	"strconv"
 
@@ -11,9 +11,11 @@ import (
 )
 
 func indexHandler(template []byte) http.HandlerFunc {
-	return func(rw http.ResponseWriter, _ *http.Request) {
+	return func(rw http.ResponseWriter, r *http.Request) {
 		if _, err := rw.Write(template); err != nil {
-			log.Printf("fault write response err: %s", err.Error())
+			slog.ErrorContext(r.Context(), "fault write response",
+				"err", err,
+			)
 		}
 	}
 }
@@ -33,15 +35,21 @@ func createSecretHandler(p SecretsProvider, externalURL string) http.HandlerFunc
 			return
 		}
 
-		token, err := p.SaveSecret(r.Context(), msgFormValue, dues)
+		ctx := r.Context()
+
+		token, err := p.SaveSecret(ctx, msgFormValue, dues)
 		if err != nil {
-			log.Printf("fault save secret err: %s", err.Error())
+			slog.ErrorContext(ctx, "fault save secret",
+				"err", err,
+			)
 			raiseError(rw, http.StatusInternalServerError)
 			return
 		}
 
 		if _, err := fmt.Fprintf(rw, "%s/get/%s", externalURL, token); err != nil {
-			log.Printf("fault write response err: %s", err.Error())
+			slog.ErrorContext(ctx, "fault write response",
+				"err", err,
+			)
 			raiseError(rw, http.StatusInternalServerError)
 			return
 		}
@@ -59,9 +67,13 @@ func viewSecretHandler(p SecretsProvider, template []byte) http.HandlerFunc {
 			return
 		}
 
+		ctx := r.Context()
+
 		secret, err := p.GetSecret(r.Context(), token)
 		if err != nil {
-			log.Printf("fault get secret err: %s", err.Error())
+			slog.ErrorContext(ctx, "fault get secret",
+				"err", err,
+			)
 			raiseError(rw, http.StatusNotFound)
 			return
 		}
@@ -72,7 +84,9 @@ func viewSecretHandler(p SecretsProvider, template []byte) http.HandlerFunc {
 		}
 
 		if _, err := fmt.Fprintf(rw, tpl, html.EscapeString(secret)); err != nil {
-			log.Printf("fault return response err: %s", err.Error())
+			slog.ErrorContext(ctx, "fault return response",
+				"err", err,
+			)
 			raiseError(rw, http.StatusInternalServerError)
 		}
 	}

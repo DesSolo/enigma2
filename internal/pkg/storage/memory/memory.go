@@ -24,11 +24,6 @@ func NewStorage() *Storage {
 	}
 }
 
-// GetInfo ...
-func (s *Storage) GetInfo(_ context.Context) string {
-	return "Memory"
-}
-
 // IsReady ...
 func (s *Storage) IsReady(_ context.Context) (bool, error) {
 	return true, nil
@@ -44,7 +39,7 @@ func (s *Storage) Get(_ context.Context, key string) (string, error) {
 		return "", nil
 	}
 
-	if secret.expire.Before(time.Now()) {
+	if secret.expire.Before(time.Now().UTC()) {
 		delete(s.secrets, key)
 		return "", nil
 	}
@@ -59,7 +54,7 @@ func (s *Storage) Save(_ context.Context, key string, message string, ttl time.D
 
 	s.secrets[key] = &secret{
 		text:   message,
-		expire: time.Now().Add(ttl),
+		expire: time.Now().UTC().Add(ttl),
 	}
 
 	return nil

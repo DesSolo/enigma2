@@ -10,11 +10,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetInfo(t *testing.T) {
-	s := memory.NewStorage()
-	assert.Equal(t, s.GetInfo(context.Background()), "Memory")
-}
-
 func TestIsReady(t *testing.T) {
 	s := memory.NewStorage()
 	ready, err := s.IsReady(context.Background())

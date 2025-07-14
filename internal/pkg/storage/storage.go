@@ -9,7 +9,6 @@ import (
 
 // SecretStorage interface
 type SecretStorage interface {
-	GetInfo(ctx context.Context) string
 	IsReady(ctx context.Context) (bool, error)
 	Get(ctx context.Context, key string) (string, error)
 	Save(ctx context.Context, key string, message string, ttl time.Duration) error
