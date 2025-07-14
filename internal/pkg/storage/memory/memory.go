@@ -1,6 +1,7 @@
 package memory
 
 import (
+	"context"
 	"sync"
 	"time"
 )
@@ -24,17 +25,17 @@ func NewStorage() *Storage {
 }
 
 // GetInfo ...
-func (s *Storage) GetInfo() string {
+func (s *Storage) GetInfo(_ context.Context) string {
 	return "Memory"
 }
 
 // IsReady ...
-func (s *Storage) IsReady() (bool, error) {
+func (s *Storage) IsReady(_ context.Context) (bool, error) {
 	return true, nil
 }
 
 // Get ...
-func (s *Storage) Get(key string) (string, error) {
+func (s *Storage) Get(_ context.Context, key string) (string, error) {
 	s.mux.RLock()
 	defer s.mux.RUnlock()
 
@@ -52,7 +53,7 @@ func (s *Storage) Get(key string) (string, error) {
 }
 
 // Save ...
-func (s *Storage) Save(key string, message string, dues int) error {
+func (s *Storage) Save(_ context.Context, key string, message string, dues int) error {
 	s.mux.Lock()
 	defer s.mux.Unlock()
 
@@ -66,7 +67,7 @@ func (s *Storage) Save(key string, message string, dues int) error {
 }
 
 // Delete ...
-func (s *Storage) Delete(key string) error {
+func (s *Storage) Delete(_ context.Context, key string) error {
 	s.mux.Lock()
 	defer s.mux.Unlock()
 
@@ -75,7 +76,7 @@ func (s *Storage) Delete(key string) error {
 }
 
 // IsUniq ...
-func (s *Storage) IsUniq(key string) (bool, error) {
+func (s *Storage) IsUniq(_ context.Context, key string) (bool, error) {
 	s.mux.RLock()
 	defer s.mux.RUnlock()
 

@@ -1,25 +1,30 @@
 package api
 
 import (
+	"context"
 	"net/http"
-
-	"enigma/internal/api/service"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
 
+// SecretsProvider ...
+type SecretsProvider interface {
+	SaveSecret(ctx context.Context, message string, dues int) (string, error)
+	GetSecret(ctx context.Context, message string) (string, error)
+}
+
 // Server ...
 type Server struct {
-	secretService *service.SecretService
-	router        *chi.Mux
+	secretsProvider SecretsProvider
+	router          *chi.Mux
 }
 
 // NewServer ...
-func NewServer(s *service.SecretService) *Server {
+func NewServer(secretsProvider SecretsProvider) *Server {
 	return &Server{
-		secretService: s,
-		router:        chi.NewRouter(),
+		secretsProvider: secretsProvider,
+		router:          chi.NewRouter(),
 	}
 }
 
@@ -30,8 +35,8 @@ func (s *Server) LoadHandlers(indexTemplate, viewSecretTemplate []byte, external
 	s.router.Use(middleware.Logger)
 
 	s.router.Get("/", indexHandler(indexTemplate))
-	s.router.Post("/post/", createSecretHandler(s.secretService, externalURL))
-	s.router.Get("/get/{token}", viewSecretHandler(s.secretService, viewSecretTemplate))
+	s.router.Post("/post/", createSecretHandler(s.secretsProvider, externalURL))
+	s.router.Get("/get/{token}", viewSecretHandler(s.secretsProvider, viewSecretTemplate))
 
 	s.router.Get("/health", healthHandler())
 }

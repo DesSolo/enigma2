@@ -26,7 +26,7 @@ type ServerConfig struct {
 			} `yaml:"await"`
 		} `yaml:"storage"`
 		Token struct {
-			Length      int `yaml:"lenght"`
+			Length      int `yaml:"length"`
 			SaveRetries int `yaml:"save_retries"`
 		} `yaml:"token"`
 	} `yaml:"secrets"`

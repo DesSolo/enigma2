@@ -3,26 +3,28 @@ package memory_test
 import (
 	"testing"
 
-	"enigma/internal/storage/memory"
+	"golang.org/x/net/context"
+
+	"enigma/internal/pkg/storage/memory"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestGetInfo(t *testing.T) {
 	s := memory.NewStorage()
-	assert.Equal(t, s.GetInfo(), "Memory")
+	assert.Equal(t, s.GetInfo(context.Background()), "Memory")
 }
 
 func TestIsReady(t *testing.T) {
 	s := memory.NewStorage()
-	ready, err := s.IsReady()
+	ready, err := s.IsReady(context.Background())
 	assert.NoError(t, err)
 	assert.True(t, ready)
 }
 
 func TestSave(t *testing.T) {
 	s := memory.NewStorage()
-	assert.NoError(t, s.Save("example", "msg", 1))
+	assert.NoError(t, s.Save(context.Background(), "example", "msg", 1))
 }
 
 var cases = []struct {
@@ -37,8 +39,8 @@ var cases = []struct {
 func TestGet(t *testing.T) {
 	s := memory.NewStorage()
 	for _, tc := range cases {
-		s.Save(tc.Key, tc.Message, 1) // nolint:errcheck
-		msg, err := s.Get(tc.Key)
+		s.Save(context.Background(), tc.Key, tc.Message, 1) // nolint:errcheck
+		msg, err := s.Get(context.Background(), tc.Key)
 		assert.NoError(t, err)
 		assert.Equal(t, msg, tc.Message)
 	}
@@ -47,8 +49,8 @@ func TestGet(t *testing.T) {
 func TestGetExpired(t *testing.T) {
 	s := memory.NewStorage()
 	for _, tc := range cases {
-		s.Save(tc.Key, tc.Message, -1) // nolint:errcheck
-		msg, err := s.Get(tc.Key)
+		s.Save(context.Background(), tc.Key, tc.Message, -1) // nolint:errcheck
+		msg, err := s.Get(context.Background(), tc.Key)
 		assert.NoError(t, err)
 		assert.NotEqual(t, msg, tc.Message)
 	}
@@ -57,10 +59,10 @@ func TestGetExpired(t *testing.T) {
 func TestDelete(t *testing.T) {
 	s := memory.NewStorage()
 	for _, tc := range cases {
-		s.Save(tc.Key, tc.Message, 1) // nolint:errcheck
-		assert.NoError(t, s.Delete(tc.Key))
+		s.Save(context.Background(), tc.Key, tc.Message, 1) // nolint:errcheck
+		assert.NoError(t, s.Delete(context.Background(), tc.Key))
 
-		msg, _ := s.Get(tc.Key)
+		msg, _ := s.Get(context.Background(), tc.Key)
 		assert.NotEqual(t, msg, tc.Message)
 	}
 }
@@ -70,13 +72,13 @@ func TestDelete(t *testing.T) {
 func TestIsUniq(t *testing.T) {
 	s := memory.NewStorage()
 	for _, tc := range cases {
-		s.Save(tc.Key, tc.Message, 1) // nolint:errcheck
-		uniq, err := s.IsUniq(tc.Key)
+		s.Save(context.Background(), tc.Key, tc.Message, 1) // nolint:errcheck
+		uniq, err := s.IsUniq(context.Background(), tc.Key)
 		assert.NoError(t, err)
 		assert.False(t, uniq)
 
-		s.Delete(tc.Key) // nolint:errcheck
-		uniq1, _ := s.IsUniq(tc.Key)
+		s.Delete(context.Background(), tc.Key) // nolint:errcheck
+		uniq1, _ := s.IsUniq(context.Background(), tc.Key)
 		assert.True(t, uniq1)
 	}
 }

@@ -22,7 +22,7 @@ secrets:
   # token settings
   token:
     # token length in bytes
-    lenght: 20
+    length: 20
     # maximum uniq save retries
     save_retries: 3
 

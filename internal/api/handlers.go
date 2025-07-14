@@ -7,8 +7,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"enigma/internal/api/service"
-
 	"github.com/go-chi/chi/v5"
 )
 
@@ -20,7 +18,7 @@ func indexHandler(template []byte) http.HandlerFunc {
 	}
 }
 
-func createSecretHandler(s *service.SecretService, externalURL string) http.HandlerFunc {
+func createSecretHandler(p SecretsProvider, externalURL string) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		msgFormValue := r.FormValue("msg")
 		dueFormValue := r.FormValue("due")
@@ -35,7 +33,7 @@ func createSecretHandler(s *service.SecretService, externalURL string) http.Hand
 			return
 		}
 
-		token, err := s.Save(msgFormValue, dues)
+		token, err := p.SaveSecret(r.Context(), msgFormValue, dues)
 		if err != nil {
 			log.Printf("fault save secret err: %s", err.Error())
 			raiseError(rw, http.StatusInternalServerError)
@@ -50,7 +48,7 @@ func createSecretHandler(s *service.SecretService, externalURL string) http.Hand
 	}
 }
 
-func viewSecretHandler(s *service.SecretService, template []byte) http.HandlerFunc {
+func viewSecretHandler(p SecretsProvider, template []byte) http.HandlerFunc {
 	tpl := string(template)
 	// todo bench this
 
@@ -61,7 +59,7 @@ func viewSecretHandler(s *service.SecretService, template []byte) http.HandlerFu
 			return
 		}
 
-		secret, err := s.Get(token)
+		secret, err := p.GetSecret(r.Context(), token)
 		if err != nil {
 			log.Printf("fault get secret err: %s", err.Error())
 			raiseError(rw, http.StatusNotFound)

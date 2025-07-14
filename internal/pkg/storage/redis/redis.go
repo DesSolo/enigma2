@@ -1,20 +1,21 @@
 package redis
 
 import (
+	"context"
 	"fmt"
 	"time"
 
-	r "github.com/go-redis/redis"
+	"github.com/redis/go-redis/v9"
 )
 
 // Storage ...
 type Storage struct {
-	client *r.Client
+	client *redis.Client
 }
 
 // NewStorage ... addr localhost:6379, password "", database 0
 func NewStorage(addr, password string, database int) *Storage {
-	client := r.NewClient(&r.Options{
+	client := redis.NewClient(&redis.Options{
 		Addr:     addr,
 		Password: password,
 		DB:       database,
@@ -26,13 +27,13 @@ func NewStorage(addr, password string, database int) *Storage {
 }
 
 // GetInfo ...
-func (s *Storage) GetInfo() string {
+func (s *Storage) GetInfo(_ context.Context) string {
 	return fmt.Sprintf("Redis addr: %s db: %d", s.client.Options().Addr, s.client.Options().DB)
 }
 
 // IsReady ...
-func (s *Storage) IsReady() (bool, error) {
-	if err := s.client.Ping().Err(); err != nil {
+func (s *Storage) IsReady(ctx context.Context) (bool, error) {
+	if err := s.client.Ping(ctx).Err(); err != nil {
 		return false, fmt.Errorf("client.Ping: %w", err)
 	}
 
@@ -40,8 +41,8 @@ func (s *Storage) IsReady() (bool, error) {
 }
 
 // Get ...
-func (s *Storage) Get(key string) (string, error) {
-	val, err := s.client.Get(key).Result()
+func (s *Storage) Get(ctx context.Context, key string) (string, error) {
+	val, err := s.client.Get(ctx, key).Result()
 	if err != nil {
 		return "", fmt.Errorf("client.Get: %w", err)
 	}
@@ -50,9 +51,9 @@ func (s *Storage) Get(key string) (string, error) {
 }
 
 // Save ...
-func (s *Storage) Save(key string, message string, dues int) error {
+func (s *Storage) Save(ctx context.Context, key string, message string, dues int) error {
 	ttl := time.Duration(dues) * (24 * time.Hour)
-	if err := s.client.Set(key, message, ttl).Err(); err != nil {
+	if err := s.client.Set(ctx, key, message, ttl).Err(); err != nil {
 		return fmt.Errorf("client.Set: %w", err)
 	}
 
@@ -60,8 +61,8 @@ func (s *Storage) Save(key string, message string, dues int) error {
 }
 
 // Delete ...
-func (s *Storage) Delete(key string) error {
-	if err := s.client.Del(key).Err(); err != nil {
+func (s *Storage) Delete(ctx context.Context, key string) error {
+	if err := s.client.Del(ctx, key).Err(); err != nil {
 		return fmt.Errorf("client.Del: %w", err)
 	}
 
@@ -69,8 +70,8 @@ func (s *Storage) Delete(key string) error {
 }
 
 // IsUniq ...
-func (s *Storage) IsUniq(key string) (bool, error) {
-	val, err := s.client.Exists(key).Result()
+func (s *Storage) IsUniq(ctx context.Context, key string) (bool, error) {
+	val, err := s.client.Exists(ctx, key).Result()
 	if err != nil {
 		return false, fmt.Errorf("client.Exists: %w", err)
 	}

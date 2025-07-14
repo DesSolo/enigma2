@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
@@ -8,11 +9,11 @@ import (
 	"time"
 
 	"enigma/internal/api"
-	"enigma/internal/api/service"
 	"enigma/internal/config"
-	"enigma/internal/storage"
-	"enigma/internal/storage/memory"
-	"enigma/internal/storage/redis"
+	"enigma/internal/pkg/providers/secrets"
+	"enigma/internal/pkg/storage"
+	"enigma/internal/pkg/storage/memory"
+	"enigma/internal/pkg/storage/redis"
 )
 
 const (
@@ -41,7 +42,7 @@ func loadSecretStorage(c *config.ServerConfig) (storage.SecretStorage, error) {
 	}
 
 	for i := 0; i < c.Secrets.Storage.Await.Retries; i++ {
-		ready, err := st.IsReady()
+		ready, err := st.IsReady(context.Background())
 		if ready {
 			return st, nil
 		}
@@ -57,7 +58,10 @@ func loadSecretStorage(c *config.ServerConfig) (storage.SecretStorage, error) {
 }
 
 func loadAPIServer(c *config.ServerConfig, s storage.SecretStorage) (*api.Server, error) {
-	secretService := service.NewSecretService(s, c.Secrets.Token.Length, c.Secrets.Token.SaveRetries)
+	secretService := secrets.New(s,
+		secrets.WithTokenLength(c.Secrets.Token.Length),
+		secrets.WithTokenSaveRetries(c.Secrets.Token.SaveRetries),
+	)
 	server := api.NewServer(secretService)
 
 	indexTemplate, err := os.ReadFile(
