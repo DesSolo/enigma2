@@ -1,8 +1,9 @@
 package api
 
 import (
-	"enigma/internal/api/service"
 	"net/http"
+
+	"enigma/internal/api/service"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -37,5 +38,5 @@ func (s *Server) LoadHandlers(indexTemplate, viewSecretTemplate []byte, external
 
 // Run ...
 func (s *Server) Run(addr string) error {
-	return http.ListenAndServe(addr, s.router)
+	return http.ListenAndServe(addr, s.router) // nolint:gosec,wrapcheck
 }

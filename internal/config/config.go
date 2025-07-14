@@ -1,7 +1,7 @@
 package config
 
 import (
-	"io/ioutil"
+	"fmt"
 	"os"
 	"time"
 
@@ -13,8 +13,8 @@ const defaultConfigFilePath = "/etc/enigma/config.yml"
 // ServerConfig ...
 type ServerConfig struct {
 	Server struct {
-		Bind        string `yaml:"bind"`
-		ExternalURL string `yaml:"external_url"`
+		Bind          string `yaml:"bind"`
+		ExternalURL   string `yaml:"external_url"`
 		TemplatesPath string `yaml:"templates_path"`
 	} `yaml:"server"`
 	Secrets struct {
@@ -37,20 +37,21 @@ type ServerConfig struct {
 	} `yaml:"redis"`
 }
 
+// NewServerConfigFromFile ...
 func NewServerConfigFromFile() (*ServerConfig, error) {
 	configFilePath := os.Getenv("CONFIG_FILE_PATH")
 	if configFilePath == "" {
 		configFilePath = defaultConfigFilePath
 	}
 
-	data, err := ioutil.ReadFile(configFilePath)
+	data, err := os.ReadFile(configFilePath) // nolint:gosec
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("os.ReadFile: %w", err)
 	}
 
 	var cfg ServerConfig
 	if err := yaml.Unmarshal(data, &cfg); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("yaml.Unmarshal: %w", err)
 	}
 
 	return &cfg, nil

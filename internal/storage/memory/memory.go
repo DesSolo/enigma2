@@ -13,7 +13,7 @@ type secret struct {
 // Storage ...
 type Storage struct {
 	secrets map[string]*secret
-	mux    sync.RWMutex
+	mux     sync.RWMutex
 }
 
 // NewStorage ...
@@ -37,7 +37,7 @@ func (s *Storage) IsReady() (bool, error) {
 func (s *Storage) Get(key string) (string, error) {
 	s.mux.RLock()
 	defer s.mux.RUnlock()
-	
+
 	secret, ok := s.secrets[key]
 	if !ok {
 		return "", nil

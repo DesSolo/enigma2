@@ -1,17 +1,18 @@
 package main
 
 import (
+	"fmt"
+	"log"
+	"os"
+	"path"
+	"time"
+
 	"enigma/internal/api"
 	"enigma/internal/api/service"
 	"enigma/internal/config"
 	"enigma/internal/storage"
 	"enigma/internal/storage/memory"
 	"enigma/internal/storage/redis"
-	"fmt"
-	"io/ioutil"
-	"log"
-	"path"
-	"time"
 )
 
 const (
@@ -20,7 +21,7 @@ const (
 )
 
 func loadServerConfig() (*config.ServerConfig, error) {
-	return config.NewServerConfigFromFile()
+	return config.NewServerConfigFromFile() // nolint:wrapcheck
 }
 
 func loadSecretStorage(c *config.ServerConfig) (storage.SecretStorage, error) {
@@ -55,18 +56,18 @@ func loadSecretStorage(c *config.ServerConfig) (storage.SecretStorage, error) {
 	return nil, fmt.Errorf("could not connect to storage after %d attempts", c.Secrets.Storage.Await.Retries)
 }
 
-func loadApiServer(c *config.ServerConfig, s storage.SecretStorage) (*api.Server, error) {
+func loadAPIServer(c *config.ServerConfig, s storage.SecretStorage) (*api.Server, error) {
 	secretService := service.NewSecretService(s, c.Secrets.Token.Length, c.Secrets.Token.SaveRetries)
 	server := api.NewServer(secretService)
 
-	indexTemplate, err := ioutil.ReadFile(
+	indexTemplate, err := os.ReadFile(
 		path.Join(c.Server.TemplatesPath, indexTemplateFileName),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("fault read index template err: %w", err)
 	}
 
-	viewSecretTemplate, err := ioutil.ReadFile(
+	viewSecretTemplate, err := os.ReadFile(
 		path.Join(c.Server.TemplatesPath, viewSecretTemplateFileName),
 	)
 	if err != nil {
@@ -89,7 +90,7 @@ func main() {
 		log.Fatalf("fault load secret storage err: %s", err.Error())
 	}
 
-	apiServer, err := loadApiServer(serverConfig, secretStorage)
+	apiServer, err := loadAPIServer(serverConfig, secretStorage)
 	if err != nil {
 		log.Fatalf("fault load api server err: %s", err.Error())
 	}

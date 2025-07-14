@@ -33,7 +33,7 @@ func (s *Storage) GetInfo() string {
 // IsReady ...
 func (s *Storage) IsReady() (bool, error) {
 	if err := s.client.Ping().Err(); err != nil {
-		return false, err
+		return false, fmt.Errorf("client.Ping: %w", err)
 	}
 
 	return true, nil
@@ -43,7 +43,7 @@ func (s *Storage) IsReady() (bool, error) {
 func (s *Storage) Get(key string) (string, error) {
 	val, err := s.client.Get(key).Result()
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("client.Get: %w", err)
 	}
 
 	return val, nil
@@ -53,7 +53,7 @@ func (s *Storage) Get(key string) (string, error) {
 func (s *Storage) Save(key string, message string, dues int) error {
 	ttl := time.Duration(dues) * (24 * time.Hour)
 	if err := s.client.Set(key, message, ttl).Err(); err != nil {
-		return err
+		return fmt.Errorf("client.Set: %w", err)
 	}
 
 	return nil
@@ -62,7 +62,7 @@ func (s *Storage) Save(key string, message string, dues int) error {
 // Delete ...
 func (s *Storage) Delete(key string) error {
 	if err := s.client.Del(key).Err(); err != nil {
-		return err
+		return fmt.Errorf("client.Del: %w", err)
 	}
 
 	return nil
@@ -72,7 +72,7 @@ func (s *Storage) Delete(key string) error {
 func (s *Storage) IsUniq(key string) (bool, error) {
 	val, err := s.client.Exists(key).Result()
 	if err != nil {
-		return false, err
+		return false, fmt.Errorf("client.Exists: %w", err)
 	}
 
 	if val == 0 {

@@ -1,8 +1,9 @@
 package memory_test
 
 import (
-	"enigma/internal/storage/memory"
 	"testing"
+
+	"enigma/internal/storage/memory"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -36,7 +37,7 @@ var cases = []struct {
 func TestGet(t *testing.T) {
 	s := memory.NewStorage()
 	for _, tc := range cases {
-		s.Save(tc.Key, tc.Message, 1)
+		s.Save(tc.Key, tc.Message, 1) // nolint:errcheck
 		msg, err := s.Get(tc.Key)
 		assert.NoError(t, err)
 		assert.Equal(t, msg, tc.Message)
@@ -46,7 +47,7 @@ func TestGet(t *testing.T) {
 func TestGetExpired(t *testing.T) {
 	s := memory.NewStorage()
 	for _, tc := range cases {
-		s.Save(tc.Key, tc.Message, -1)
+		s.Save(tc.Key, tc.Message, -1) // nolint:errcheck
 		msg, err := s.Get(tc.Key)
 		assert.NoError(t, err)
 		assert.NotEqual(t, msg, tc.Message)
@@ -56,7 +57,7 @@ func TestGetExpired(t *testing.T) {
 func TestDelete(t *testing.T) {
 	s := memory.NewStorage()
 	for _, tc := range cases {
-		s.Save(tc.Key, tc.Message, 1)
+		s.Save(tc.Key, tc.Message, 1) // nolint:errcheck
 		assert.NoError(t, s.Delete(tc.Key))
 
 		msg, _ := s.Get(tc.Key)
@@ -64,15 +65,17 @@ func TestDelete(t *testing.T) {
 	}
 }
 
+// TODO: fix tests
+
 func TestIsUniq(t *testing.T) {
 	s := memory.NewStorage()
 	for _, tc := range cases {
-		s.Save(tc.Key, tc.Message, 1)
+		s.Save(tc.Key, tc.Message, 1) // nolint:errcheck
 		uniq, err := s.IsUniq(tc.Key)
 		assert.NoError(t, err)
 		assert.False(t, uniq)
 
-		s.Delete(tc.Key)
+		s.Delete(tc.Key) // nolint:errcheck
 		uniq1, _ := s.IsUniq(tc.Key)
 		assert.True(t, uniq1)
 	}

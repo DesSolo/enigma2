@@ -1,18 +1,19 @@
 package api
 
 import (
-	"enigma/internal/api/service"
 	"fmt"
 	"html"
 	"log"
 	"net/http"
 	"strconv"
 
+	"enigma/internal/api/service"
+
 	"github.com/go-chi/chi/v5"
 )
 
 func indexHandler(template []byte) http.HandlerFunc {
-	return func(rw http.ResponseWriter, r *http.Request) {
+	return func(rw http.ResponseWriter, _ *http.Request) {
 		if _, err := rw.Write(template); err != nil {
 			log.Printf("fault write response err: %s", err.Error())
 		}
@@ -29,7 +30,7 @@ func createSecretHandler(s *service.SecretService, externalURL string) http.Hand
 		}
 
 		dues, err := strconv.Atoi(dueFormValue)
-		if err != nil || !(dues >= 1 && dues <= 4) {
+		if err != nil || (dues < 1 || dues > 4) {
 			raiseError(rw, http.StatusBadRequest)
 			return
 		}
@@ -80,9 +81,9 @@ func viewSecretHandler(s *service.SecretService, template []byte) http.HandlerFu
 }
 
 func healthHandler() http.HandlerFunc {
-	return func(rw http.ResponseWriter, r *http.Request) {
+	return func(rw http.ResponseWriter, _ *http.Request) {
 		rw.Header().Set("Content-Type", "application/json")
 		rw.WriteHeader(http.StatusOK)
-		rw.Write([]byte(`{"healthy": true}`))
+		rw.Write([]byte(`{"healthy": true}`)) // nolint:errcheck
 	}
 }
