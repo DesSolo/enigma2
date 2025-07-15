@@ -8,8 +8,6 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-const defaultConfigFilePath = "/etc/enigma/config.yml"
-
 // ServerConfig ...
 type ServerConfig struct {
 	Logging struct {
@@ -47,12 +45,7 @@ type ServerConfig struct {
 }
 
 // NewServerConfigFromFile ...
-func NewServerConfigFromFile() (*ServerConfig, error) {
-	configFilePath := os.Getenv("CONFIG_FILE_PATH")
-	if configFilePath == "" {
-		configFilePath = defaultConfigFilePath
-	}
-
+func NewServerConfigFromFile(configFilePath string) (*ServerConfig, error) {
 	data, err := os.ReadFile(configFilePath) // nolint:gosec
 	if err != nil {
 		return nil, fmt.Errorf("os.ReadFile: %w", err)
