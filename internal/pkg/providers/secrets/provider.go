@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"time"
 
+	"enigma/internal/pkg/hasher"
 	"enigma/internal/pkg/storage"
 )
 
@@ -18,15 +19,18 @@ const (
 // Provider ...
 type Provider struct {
 	storage storage.SecretStorage
+	hasher  hasher.Hasher
 
 	tokenLength      int
 	tokenSaveRetries int
 }
 
 // New ...
-func New(storage storage.SecretStorage, options ...OptionFunc) *Provider {
+func New(storage storage.SecretStorage, hasher hasher.Hasher, options ...OptionFunc) *Provider {
 	p := &Provider{
-		storage:          storage,
+		storage: storage,
+		hasher:  hasher,
+
 		tokenLength:      defaultTokenLength,
 		tokenSaveRetries: defaultTokenSaveRetries,
 	}
@@ -45,10 +49,13 @@ func (p *Provider) SaveSecret(ctx context.Context, message string, dues int) (st
 		return "", fmt.Errorf("s.GenerateUniqToken: %w", err)
 	}
 
-	// todo make hash!
+	encrypted, err := p.hasher.Encrypt(message)
+	if err != nil {
+		return "", fmt.Errorf("s.Encrypt: %w", err)
+	}
 
 	ttl := time.Duration(dues) * (24 * time.Hour)
-	if err := p.storage.Save(ctx, token, message, ttl); err != nil {
+	if err := p.storage.Save(ctx, token, encrypted, ttl); err != nil {
 		return "", fmt.Errorf("storage.Save: %w", err)
 	}
 
@@ -62,13 +69,16 @@ func (p *Provider) GetSecret(ctx context.Context, key string) (string, error) {
 		return "", fmt.Errorf("storage.Get: %w", err)
 	}
 
-	// todo unhash!
+	decrypted, err := p.hasher.Decrypt(secret)
+	if err != nil {
+		return "", fmt.Errorf("p.hasher.Decrypt: %w", err)
+	}
 
 	if err := p.storage.Delete(ctx, key); err != nil {
 		return "", fmt.Errorf("storage.Delete: %w", err)
 	}
 
-	return secret, nil
+	return decrypted, nil
 }
 
 func (p *Provider) generateUniqToken(ctx context.Context, length int, retries int) (string, error) {

@@ -19,6 +19,14 @@ secrets:
       retries: 10
       # waiting time before trying again
       interval: "1s"
+  # hasher options
+  hasher:
+    # kind of hasher
+    kind: aes256
+    # aes256 options
+    aes256:
+      # secret key (must be 32 bits)
+      key: super_secret_key_super_secret_ke
   # token settings
   token:
     # token length in bytes

@@ -10,6 +10,7 @@ import (
 
 	"enigma/internal/api"
 	"enigma/internal/config"
+	"enigma/internal/pkg/hasher"
 	"enigma/internal/pkg/providers/secrets"
 	"enigma/internal/pkg/storage"
 	"enigma/internal/pkg/storage/memory"
@@ -61,8 +62,23 @@ func loadSecretStorage(c *config.ServerConfig) (storage.SecretStorage, error) {
 	return nil, fmt.Errorf("could not connect to storage after %d attempts", c.Secrets.Storage.Await.Retries)
 }
 
-func loadAPIServer(c *config.ServerConfig, s storage.SecretStorage) (*api.Server, error) {
-	secretService := secrets.New(s,
+func loadHasher(c *config.ServerConfig) (hasher.Hasher, error) {
+	switch c.Secrets.Hasher.Kind {
+	case "aes256":
+		aes, err := hasher.NewAESHasher([]byte(c.Secrets.Hasher.AES256.Key))
+		if err != nil {
+			return nil, fmt.Errorf("could not create hasher: %s", err.Error())
+		}
+
+		return aes, nil
+
+	default:
+		return nil, fmt.Errorf("hasher kind %s not supported", c.Secrets.Hasher.Kind)
+	}
+}
+
+func loadAPIServer(c *config.ServerConfig, h hasher.Hasher, s storage.SecretStorage) (*api.Server, error) {
+	secretService := secrets.New(s, h,
 		secrets.WithTokenLength(c.Secrets.Token.Length),
 		secrets.WithTokenSaveRetries(c.Secrets.Token.SaveRetries),
 	)
@@ -98,7 +114,12 @@ func main() {
 		log.Fatalf("fault load secret storage err: %s", err.Error())
 	}
 
-	apiServer, err := loadAPIServer(serverConfig, secretStorage)
+	secretsHasher, err := loadHasher(serverConfig)
+	if err != nil {
+		log.Fatalf("fault load hasher err: %s", err.Error())
+	}
+
+	apiServer, err := loadAPIServer(serverConfig, secretsHasher, secretStorage)
 	if err != nil {
 		log.Fatalf("fault load api server err: %s", err.Error())
 	}

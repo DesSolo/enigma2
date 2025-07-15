@@ -25,6 +25,12 @@ type ServerConfig struct {
 				Interval time.Duration `yaml:"interval"`
 			} `yaml:"await"`
 		} `yaml:"storage"`
+		Hasher struct {
+			Kind   string `yaml:"kind"`
+			AES256 struct {
+				Key string `yaml:"key"`
+			} `yaml:"aes256"`
+		} `yaml:"hasher"`
 		Token struct {
 			Length      int `yaml:"length"`
 			SaveRetries int `yaml:"save_retries"`
