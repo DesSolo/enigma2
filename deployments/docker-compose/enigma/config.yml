@@ -10,10 +10,10 @@ secrets:
       retries: 10
       interval: "1s"
   token:
-    lenght: 20
+    length: 20
     save_retries: 3
 
-redis:
-  address: redis:6379
-  password: ""
-  database: 0
+  redis:
+    address: redis:6379
+    password: ""
+    database: 0

@@ -58,7 +58,6 @@ func createSecretHandler(p SecretsProvider, externalURL string) http.HandlerFunc
 
 func viewSecretHandler(p SecretsProvider, template []byte) http.HandlerFunc {
 	tpl := string(template)
-	// todo bench this
 
 	return func(rw http.ResponseWriter, r *http.Request) {
 		token := chi.URLParam(r, "token")

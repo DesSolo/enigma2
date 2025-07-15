@@ -5,10 +5,7 @@
 ![Docker Image Version (latest by date)](https://img.shields.io/docker/v/dessolo/enigma2)
 ![GitHub](https://img.shields.io/github/license/dessolo/enigma2)
 
-Simple online solution to transfer disposable links, like [onetimesecret.com](http://onetimesecret.com)
-
-### Demo
-https://enigma2-example.herokuapp.com
+OpenSource self-hosted solution to transfer disposable links, like [onetimesecret.com](http://onetimesecret.com)
 
 ### Examples
 see [deployments](/deployments/) examples
@@ -17,6 +14,11 @@ see [deployments](/deployments/) examples
 ```shell
 docker run --rm -p 8080:8080 dessolo/enigma2:latest
 ```
+
+### Features
+- Encrypt secrets on AES256
+- Scalability
+- Easy to rebrand (see [Customisation](#Customisation))
 
 #### Configuration
 For more details see [example](/examples/config.yml) config.  
