@@ -11,8 +11,19 @@ server:
 secrets:
   # storage settings
   storage:
-    # type storage
-    type: memory
+    # kind of storage
+    # supported kinds:
+    #   memory - keep all secrets in memory
+    #   redis - store all secrets in redis server
+    kind: memory
+    # redis settings block (required if kind = redis)
+    redis:
+      # connection address
+      address: 127.0.0.1:6379
+      # connection password
+      password: ""
+      # database number
+      database: 0
     # waiting for storage to be available on initial application startup
     await:
       # how many retries for attempt connect
@@ -33,12 +44,3 @@ secrets:
     length: 20
     # maximum uniq save retries
     save_retries: 3
-
-# redis settings block (required if secrets.stirage.type is "redis")
-redis:
-  # connection address
-  address: 127.0.0.1:6379
-  # connection password
-  password: ""
-  # database number
-  database: 0

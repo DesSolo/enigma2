@@ -19,11 +19,16 @@ type ServerConfig struct {
 	} `yaml:"server"`
 	Secrets struct {
 		Storage struct {
-			Type  string `yaml:"type"`
+			Kind  string `yaml:"kind"`
 			Await struct {
 				Retries  int           `yaml:"retries"`
 				Interval time.Duration `yaml:"interval"`
 			} `yaml:"await"`
+			Redis struct {
+				Address  string `yaml:"address"`
+				Password string `yaml:"password"`
+				Database int    `yaml:"database"`
+			} `yaml:"redis"`
 		} `yaml:"storage"`
 		Hasher struct {
 			Kind   string `yaml:"kind"`
@@ -36,11 +41,6 @@ type ServerConfig struct {
 			SaveRetries int `yaml:"save_retries"`
 		} `yaml:"token"`
 	} `yaml:"secrets"`
-	Redis struct {
-		Address  string `yaml:"address"`
-		Password string `yaml:"password"`
-		Database int    `yaml:"database"`
-	} `yaml:"redis"`
 }
 
 // NewServerConfigFromFile ...

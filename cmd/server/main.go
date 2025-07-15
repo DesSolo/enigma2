@@ -31,19 +31,19 @@ func loadServerConfig() (*config.ServerConfig, error) {
 func loadSecretStorage(c *config.ServerConfig) (storage.SecretStorage, error) {
 	var st storage.SecretStorage
 
-	switch c.Secrets.Storage.Type {
+	switch c.Secrets.Storage.Kind {
 	case "memory":
 		st = memory.NewStorage()
 	case "redis":
 		st = redis.NewStorage(
 			goredis.NewClient(&goredis.Options{
-				Addr:     c.Redis.Address,
-				Password: c.Redis.Password,
-				DB:       c.Redis.Database,
+				Addr:     c.Secrets.Storage.Redis.Address,
+				Password: c.Secrets.Storage.Redis.Password,
+				DB:       c.Secrets.Storage.Redis.Database,
 			}),
 		)
 	default:
-		return nil, fmt.Errorf("storage type: %s not supported", c.Secrets.Storage.Type)
+		return nil, fmt.Errorf("storage kind: %s not supported", c.Secrets.Storage.Kind)
 	}
 
 	for i := 0; i < c.Secrets.Storage.Await.Retries; i++ {
