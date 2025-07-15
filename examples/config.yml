@@ -1,3 +1,11 @@
+# logging settings block
+logging:
+  # Debug = -4
+  #	Info  = 0
+  #	Warn  = 4
+  #	Error = 8
+  level: -4
+
 # server settings block
 server:
   # listen on specified address and port

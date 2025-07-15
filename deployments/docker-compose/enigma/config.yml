@@ -1,3 +1,6 @@
+logging:
+  level: 8
+
 server:
   bind: 0.0.0.0:9000
   external_url: http://127.0.0.1:8080

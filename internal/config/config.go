@@ -12,6 +12,9 @@ const defaultConfigFilePath = "/etc/enigma/config.yml"
 
 // ServerConfig ...
 type ServerConfig struct {
+	Logging struct {
+		Level int `yaml:"level"`
+	} `yaml:"logging"`
 	Server struct {
 		Bind          string `yaml:"bind"`
 		ExternalURL   string `yaml:"external_url"`

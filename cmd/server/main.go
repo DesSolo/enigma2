@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"log/slog"
 	"os"
 	"path"
 	"time"
@@ -26,6 +27,16 @@ const (
 
 func loadServerConfig() (*config.ServerConfig, error) {
 	return config.NewServerConfigFromFile() // nolint:wrapcheck
+}
+
+func configureLogger(c *config.ServerConfig) {
+	handler := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
+		Level: slog.Level(c.Logging.Level),
+	})
+
+	slog.SetDefault(
+		slog.New(handler),
+	)
 }
 
 func loadSecretStorage(c *config.ServerConfig) (storage.SecretStorage, error) {
@@ -52,10 +63,14 @@ func loadSecretStorage(c *config.ServerConfig) (storage.SecretStorage, error) {
 			return st, nil
 		}
 		if err != nil {
-			log.Printf("storage error: %s", err.Error())
+			slog.Warn("storage not ready", "err", err)
 		}
 
-		log.Printf("await storage attempt: %d/%d sleep: %s", i+1, c.Secrets.Storage.Await.Retries, c.Secrets.Storage.Await.Interval)
+		slog.Warn("await storage",
+			"attempt", i+1,
+			"max", c.Secrets.Storage.Await.Retries,
+			"await", c.Secrets.Storage.Await.Interval,
+		)
 		time.Sleep(c.Secrets.Storage.Await.Interval)
 	}
 
@@ -88,14 +103,14 @@ func loadAPIServer(c *config.ServerConfig, h hasher.Hasher, s storage.SecretStor
 		path.Join(c.Server.TemplatesPath, indexTemplateFileName),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("fault read index template err: %w", err)
+		return nil, fmt.Errorf("failed to read index template err: %w", err)
 	}
 
 	viewSecretTemplate, err := os.ReadFile(
 		path.Join(c.Server.TemplatesPath, viewSecretTemplateFileName),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("fault read view secret template err: %w", err)
+		return nil, fmt.Errorf("failed to read view secret template err: %w", err)
 	}
 
 	server.LoadHandlers(indexTemplate, viewSecretTemplate, c.Server.ExternalURL)
@@ -106,25 +121,27 @@ func loadAPIServer(c *config.ServerConfig, h hasher.Hasher, s storage.SecretStor
 func main() {
 	serverConfig, err := loadServerConfig()
 	if err != nil {
-		log.Fatalf("fault load config err: %s", err.Error())
+		log.Fatalf("failed to load config err: %s", err.Error())
 	}
+
+	configureLogger(serverConfig)
 
 	secretStorage, err := loadSecretStorage(serverConfig)
 	if err != nil {
-		log.Fatalf("fault load secret storage err: %s", err.Error())
+		log.Fatalf("failed to load secret storage err: %s", err.Error())
 	}
 
 	secretsHasher, err := loadHasher(serverConfig)
 	if err != nil {
-		log.Fatalf("fault load hasher err: %s", err.Error())
+		log.Fatalf("failed to load hasher err: %s", err.Error())
 	}
 
 	apiServer, err := loadAPIServer(serverConfig, secretsHasher, secretStorage)
 	if err != nil {
-		log.Fatalf("fault load api server err: %s", err.Error())
+		log.Fatalf("failed to load api server err: %s", err.Error())
 	}
 
 	if err := apiServer.Run(serverConfig.Server.Bind); err != nil {
-		log.Fatalf("fault run api server err: %s", err.Error())
+		log.Fatalf("failed to run api server err: %s", err.Error())
 	}
 }

@@ -25,12 +25,20 @@ func createSecretHandler(p SecretsProvider, externalURL string) http.HandlerFunc
 		msgFormValue := r.FormValue("msg")
 		dueFormValue := r.FormValue("due")
 		if len(msgFormValue) == 0 || len(dueFormValue) == 0 || len(msgFormValue) >= 65535 {
+			slog.Warn("not valid",
+				"len_msgFormValue", len(msgFormValue),
+				"dueFormValue", dueFormValue,
+			)
 			raiseError(rw, http.StatusBadRequest)
 			return
 		}
 
 		dues, err := strconv.Atoi(dueFormValue)
 		if err != nil || (dues < 1 || dues > 4) {
+			slog.Warn("not valid dues",
+				"dues", dues,
+				"err", err,
+			)
 			raiseError(rw, http.StatusBadRequest)
 			return
 		}
