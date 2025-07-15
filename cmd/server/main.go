@@ -25,6 +25,17 @@ const (
 	viewSecretTemplateFileName = "view_secret.html"
 )
 
+var version = "local"
+
+const banner = `
+ _______ __   _ _____  ______ _______ _______
+ |______ | \  |   |   |  ____ |  |  | |_____|
+ |______ |  \_| __|__ |_____| |  |  | |     |
+
+ version: %s
+
+`
+
 func loadServerConfig() (*config.ServerConfig, error) {
 	return config.NewServerConfigFromFile() // nolint:wrapcheck
 }
@@ -140,6 +151,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to load api server err: %s", err.Error())
 	}
+
+	fmt.Printf(banner, version)
+
+	slog.Info("server running on", "addr", serverConfig.Server.Bind)
 
 	if err := apiServer.Run(serverConfig.Server.Bind); err != nil {
 		log.Fatalf("failed to run api server err: %s", err.Error())

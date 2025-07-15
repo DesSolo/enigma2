@@ -1,7 +1,7 @@
 PROJECT_NAME = $(shell basename "$(PWD)")
 BINARIES_DIRECTORY = bin
 VERSION ?= $(shell cat VERSION)
-LDFLAGS = "-w -s"
+LDFLAGS = "-w -s -X main.version=${VERSION}"
 
 .DEFAULT_GOAL := help
 
