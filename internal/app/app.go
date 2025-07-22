@@ -16,13 +16,15 @@ func New() *App {
 
 // Run ...
 func (a *App) Run(ctx context.Context) error {
-	di := newContainer()
+	di := newContainer(ctx)
 
 	configureLogger(di)
 
-	slog.Info("server running", "addr", di.Config().Server.Bind)
+	bindAddr := di.Config().Server.Bind
 
-	if err := di.APIServer().Run(di.Config().Server.Bind); err != nil {
+	slog.Info("server running", "addr", bindAddr)
+
+	if err := di.APIServer().Run(ctx, bindAddr); err != nil {
 		return fmt.Errorf("failed to start API server: %w", err)
 	}
 

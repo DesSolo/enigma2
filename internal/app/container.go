@@ -17,6 +17,7 @@ import (
 	"enigma/internal/pkg/storage"
 	"enigma/internal/pkg/storage/memory"
 	"enigma/internal/pkg/storage/redis"
+	"enigma/pkg/closer"
 )
 
 type container struct {
@@ -25,10 +26,14 @@ type container struct {
 	hasher          hasher.Hasher
 	secretsProvider *secrets.Provider
 	apiServer       *api.Server
+
+	ctx context.Context
 }
 
-func newContainer() *container {
-	return &container{}
+func newContainer(ctx context.Context) *container {
+	return &container{
+		ctx: ctx,
+	}
 }
 
 // Config ...
@@ -73,10 +78,11 @@ func (c *container) SecretStorage() storage.SecretStorage {
 		}
 
 		for i := 0; i < options.Await.Retries; i++ {
-			ready, err := st.IsReady(context.Background())
+			ready, err := st.IsReady(c.ctx)
 			if ready {
 				c.secretStorage = st
-				break
+				closer.Add(st.Close)
+				return c.secretStorage
 			}
 
 			if err != nil {

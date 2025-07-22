@@ -4,6 +4,8 @@ import (
 	"context"
 	"sync"
 	"time"
+
+	"enigma/internal/pkg/storage"
 )
 
 type secret struct {
@@ -36,7 +38,7 @@ func (s *Storage) Get(_ context.Context, key string) (string, error) {
 
 	secret, ok := s.secrets[key]
 	if !ok {
-		return "", nil
+		return "", storage.ErrNotFound
 	}
 
 	if secret.expire.Before(time.Now().UTC()) {
@@ -76,4 +78,9 @@ func (s *Storage) IsUniq(_ context.Context, key string) (bool, error) {
 
 	_, ok := s.secrets[key]
 	return !ok, nil
+}
+
+// Close ...
+func (s *Storage) Close() error {
+	return nil
 }

@@ -14,4 +14,5 @@ type SecretStorage interface {
 	Save(ctx context.Context, key string, message string, ttl time.Duration) error
 	Delete(ctx context.Context, key string) error
 	IsUniq(ctx context.Context, key string) (bool, error)
+	Close() error
 }

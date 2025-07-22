@@ -4,10 +4,13 @@ package redis
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
 	"github.com/redis/go-redis/v9"
+
+	"enigma/internal/pkg/storage"
 )
 
 // Storage ...
@@ -35,6 +38,10 @@ func (s *Storage) IsReady(ctx context.Context) (bool, error) {
 func (s *Storage) Get(ctx context.Context, key string) (string, error) {
 	val, err := s.client.Get(ctx, key).Result()
 	if err != nil {
+		if errors.Is(err, redis.Nil) {
+			return "", storage.ErrNotFound
+		}
+
 		return "", fmt.Errorf("client.Get: %w", err)
 	}
 
@@ -71,4 +78,9 @@ func (s *Storage) IsUniq(ctx context.Context, key string) (bool, error) {
 	}
 
 	return false, nil
+}
+
+// Close ...
+func (s *Storage) Close() error {
+	return s.client.Close() // nolint:wrapcheck
 }

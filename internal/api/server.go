@@ -2,10 +2,18 @@ package api
 
 import (
 	"context"
+	"errors"
+	"fmt"
+	"log/slog"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+)
+
+const (
+	defaultReadTimeout = 5 * time.Second
 )
 
 // SecretsProvider ...
@@ -42,6 +50,23 @@ func (s *Server) LoadHandlers(indexTemplate, viewSecretTemplate []byte, external
 }
 
 // Run ...
-func (s *Server) Run(addr string) error {
-	return http.ListenAndServe(addr, s.router) // nolint:gosec,wrapcheck
+func (s *Server) Run(ctx context.Context, addr string) error {
+	server := http.Server{
+		Addr:        addr,
+		Handler:     s.router,
+		ReadTimeout: defaultReadTimeout,
+	}
+
+	go func() {
+		<-ctx.Done()
+		if err := server.Shutdown(ctx); err != nil {
+			slog.Error("failed to shutdown server", "err", err)
+		}
+	}()
+
+	if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+		return fmt.Errorf(" server.ListenAndServe: %w", err)
+	}
+
+	return nil
 }
