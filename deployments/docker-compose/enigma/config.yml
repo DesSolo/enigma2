@@ -1,22 +1,54 @@
+# logging settings block
 logging:
-  level: 8
+  # Debug = -4
+  #	Info  = 0
+  #	Warn  = 4
+  #	Error = 8
+  level: -4
 
+# server settings block
 server:
+  # listen on specified address and port
   bind: 0.0.0.0:9000
-  external_url: http://127.0.0.1:8080
-  templates_path: templates/ 
+  # full external url (used as prefix to view secret)
+  external_url: http://127.0.0.1:9000
+  # templates path
+  templates_path: templates/
 
+# secrets settings block
 secrets:
+  # storage settings
   storage:
-    type: redis
+    # kind of storage
+    # supported kinds:
+    #   memory - keep all secrets in memory
+    #   redis - store all secrets in redis server
+    kind: redis
+    # redis settings block (required if kind = redis)
+    redis:
+      # connection address
+      address: 127.0.0.1:6379
+      # connection password
+      password: ""
+      # database number
+      database: 0
+    # waiting for storage to be available on initial application startup
     await:
+      # how many retries for attempt connect
       retries: 10
+      # waiting time before trying again
       interval: "1s"
+  # hasher options
+  hasher:
+    # kind of hasher
+    kind: aes256
+    # aes256 options
+    aes256:
+      # secret key (must be 32 bits)
+      key: super_secret_key_super_secret_ke
+  # token settings
   token:
+    # token length in bytes
     length: 20
+    # maximum uniq save retries
     save_retries: 3
-
-  redis:
-    address: redis:6379
-    password: ""
-    database: 0
