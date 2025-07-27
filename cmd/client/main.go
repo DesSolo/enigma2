@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
@@ -27,7 +27,7 @@ func sendEnigma(addr, msg string, due int) (string, error) {
 	}
 	req, err := http.NewRequest(http.MethodPost, addr+"/post/", strings.NewReader(data.Encode()))
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("http.NewRequest: %w", err)
 	}
 
 	req.Header.Set("User-Agent", userAgent)
@@ -35,12 +35,12 @@ func sendEnigma(addr, msg string, due int) (string, error) {
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("DefaultClient.Do: %w", err)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("io.ReadAll: %w", err)
 	}
 	defer resp.Body.Close()
 
@@ -52,7 +52,7 @@ func main() {
 		serverAddress string
 		dues, copies  int
 	)
-	
+
 	flag.StringVar(&serverAddress, "s", defaultServerAddress, fmt.Sprintf("Server address. Сan be specified from env \"%s\"", envServerAddressKey))
 	flag.IntVar(&dues, "d", 1, "How many days to keep the message 1..4")
 	flag.IntVar(&copies, "c", 1, "How many times to copy messages 1...")
@@ -70,7 +70,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	if !(dues >= 1 && dues <= 4) {
+	if dues < 1 || dues > 4 {
 		log.Fatalln("Due must be within 1...4")
 	}
 
@@ -84,7 +84,7 @@ func main() {
 			if err != nil {
 				log.Println("fault send data err:", err)
 			}
-			fmt.Println(resp)
+			fmt.Println(resp) // nolint:forbidigo
 		}
 	}
 }

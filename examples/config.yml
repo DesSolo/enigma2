@@ -1,3 +1,11 @@
+# logging settings block
+logging:
+  # Debug = -4
+  #	Info  = 0
+  #	Warn  = 4
+  #	Error = 8
+  level: -4
+
 # server settings block
 server:
   # listen on specified address and port
@@ -11,26 +19,36 @@ server:
 secrets:
   # storage settings
   storage:
-    # type storage
-    type: memory
+    # kind of storage
+    # supported kinds:
+    #   memory - keep all secrets in memory
+    #   redis - store all secrets in redis server
+    kind: memory
+    # redis settings block (required if kind = redis)
+    redis:
+      # connection address
+      address: 127.0.0.1:6379
+      # connection password
+      password: ""
+      # database number
+      database: 0
     # waiting for storage to be available on initial application startup
     await:
       # how many retries for attempt connect
       retries: 10
       # waiting time before trying again
       interval: "1s"
+  # hasher options
+  hasher:
+    # kind of hasher
+    kind: aes256
+    # aes256 options
+    aes256:
+      # secret key (must be 32 bits)
+      key: super_secret_key_super_secret_ke
   # token settings
   token:
     # token length in bytes
-    lenght: 20
+    length: 20
     # maximum uniq save retries
     save_retries: 3
-
-# redis settings block (required if secrets.stirage.type is "redis")
-redis:
-  # connection address
-  address: 127.0.0.1:6379
-  # connection password
-  password: ""
-  # database number
-  database: 0

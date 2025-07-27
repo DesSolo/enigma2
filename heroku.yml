@@ -1,6 +1,0 @@
-build:
-  docker:
-    web: Dockerfile
-
-run:
-  web: sed -i -e "s/:9000/:$PORT/; s/\(external_url:\)\(.*\)/\1 https:\/\/enigma2-example.herokuapp.com/" /etc/enigma/config.yml && ./enigma

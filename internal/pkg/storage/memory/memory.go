@@ -1,8 +1,11 @@
 package memory
 
 import (
+	"context"
 	"sync"
 	"time"
+
+	"enigma/internal/pkg/storage"
 )
 
 type secret struct {
@@ -13,7 +16,7 @@ type secret struct {
 // Storage ...
 type Storage struct {
 	secrets map[string]*secret
-	mux    sync.RWMutex
+	mux     sync.RWMutex
 }
 
 // NewStorage ...
@@ -23,50 +26,44 @@ func NewStorage() *Storage {
 	}
 }
 
-// GetInfo ...
-func (s *Storage) GetInfo() string {
-	return "Memory"
-}
-
 // IsReady ...
-func (s *Storage) IsReady() (bool, error) {
+func (s *Storage) IsReady(_ context.Context) (bool, error) {
 	return true, nil
 }
 
 // Get ...
-func (s *Storage) Get(key string) (string, error) {
+func (s *Storage) Get(_ context.Context, key string) (string, error) {
 	s.mux.RLock()
 	defer s.mux.RUnlock()
-	
+
 	secret, ok := s.secrets[key]
 	if !ok {
-		return "", nil
+		return "", storage.ErrNotFound
 	}
 
-	if secret.expire.Before(time.Now()) {
+	if secret.expire.Before(time.Now().UTC()) {
 		delete(s.secrets, key)
-		return "", nil
+		return "", storage.ErrNotFound
 	}
 
 	return secret.text, nil
 }
 
 // Save ...
-func (s *Storage) Save(key string, message string, dues int) error {
+func (s *Storage) Save(_ context.Context, key string, message string, ttl time.Duration) error {
 	s.mux.Lock()
 	defer s.mux.Unlock()
 
-	ttl := time.Duration(dues) * (24 * time.Hour)
 	s.secrets[key] = &secret{
 		text:   message,
-		expire: time.Now().Add(ttl),
+		expire: time.Now().UTC().Add(ttl),
 	}
 
 	return nil
 }
 
 // Delete ...
-func (s *Storage) Delete(key string) error {
+func (s *Storage) Delete(_ context.Context, key string) error {
 	s.mux.Lock()
 	defer s.mux.Unlock()
 
@@ -75,10 +72,20 @@ func (s *Storage) Delete(key string) error {
 }
 
 // IsUniq ...
-func (s *Storage) IsUniq(key string) (bool, error) {
+func (s *Storage) IsUniq(_ context.Context, key string) (bool, error) {
 	s.mux.RLock()
 	defer s.mux.RUnlock()
 
 	_, ok := s.secrets[key]
 	return !ok, nil
 }
+
+// Close ...
+func (s *Storage) Close() error {
+	return nil
+}
+
+// TODO: add cleaner
+// by timer
+// allocate new map
+// copy secret when it is relevant
