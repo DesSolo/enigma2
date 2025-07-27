@@ -62,9 +62,23 @@ func (p *Provider) SaveSecret(ctx context.Context, message string, dues int) (st
 	return token, nil
 }
 
+// CheckExistsSecret ...
+func (p *Provider) CheckExistsSecret(ctx context.Context, token string) error {
+	uniq, err := p.storage.IsUniq(ctx, token)
+	if err != nil {
+		return fmt.Errorf("storage.IsUniq: %w", err)
+	}
+
+	if uniq {
+		return storage.ErrNotFound
+	}
+
+	return nil
+}
+
 // GetSecret ...
-func (p *Provider) GetSecret(ctx context.Context, key string) (string, error) {
-	secret, err := p.storage.Get(ctx, key)
+func (p *Provider) GetSecret(ctx context.Context, token string) (string, error) {
+	secret, err := p.storage.Get(ctx, token)
 	if err != nil {
 		return "", fmt.Errorf("storage.Get: %w", err)
 	}
@@ -74,7 +88,7 @@ func (p *Provider) GetSecret(ctx context.Context, key string) (string, error) {
 		return "", fmt.Errorf("p.hasher.Decrypt: %w", err)
 	}
 
-	if err := p.storage.Delete(ctx, key); err != nil {
+	if err := p.storage.Delete(ctx, token); err != nil {
 		return "", fmt.Errorf("storage.Delete: %w", err)
 	}
 

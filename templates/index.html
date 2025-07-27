@@ -1,22 +1,240 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title> ...enigma... </title>
-</head>
-<body>
-<form action="/post/" method="POST">
-    Message:
-    <br>
-    <textarea name="msg" cols="72" rows="10"></textarea><!-- input type="text" name="msg" maxlength="65535" value="" -->
-    <br>
-    Due: <select name="due">
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-    </select>
-    days from now
-    <input type="submit">
-</form>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block styles %}
+<style>
+    .subtitle {
+        color: var(--gray);
+        font-size: 16px;
+        margin-bottom: 30px;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+        text-align: left;
+    }
+
+    label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+        font-size: 15px;
+    }
+
+    textarea {
+        width: 100%;
+        min-height: 150px;
+        padding: 15px;
+        font-size: 16px;
+        color: var(--dark);
+        background-color: var(--light);
+        border: 2px solid var(--border);
+        border-radius: 10px;
+        resize: vertical;
+        transition: all 0.3s ease;
+    }
+
+    textarea:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .days-selector {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 10px;
+        text-align: center;
+    }
+
+    .day-option {
+        background: var(--light);
+        border: 2px solid var(--border);
+        border-radius: 10px;
+        padding: 12px 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        color: var(--gray);
+        flex: 1;
+        min-width: 80px;
+    }
+
+    .day-option:hover {
+        border-color: #a0a0d0;
+    }
+
+    .day-option.selected {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        color: #fff;
+        border-color: var(--primary);
+    }
+
+    .secondary-btn {
+        background: transparent;
+        color: var(--primary);
+        border: 2px solid var(--primary);
+        padding: 12px 25px;
+        border-radius: 50px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin: 10px 5px 0;
+        font-weight: 600;
+    }
+
+    .secondary-btn:hover {
+        background-color: var(--primary);
+        color: #fff;
+    }
+
+    .result-container {
+        display: none;
+        margin-top: 30px;
+        padding: 20px;
+        background: rgba(102, 126, 234, 0.05);
+        border-radius: 10px;
+        text-align: center;
+    }
+
+    .secret-link {
+        display: block;
+        background: var(--light);
+        border: 2px solid var(--border);
+        border-radius: 10px;
+        padding: 15px;
+        margin: 20px 0;
+        word-break: break-all;
+        font-size: 15px;
+        color: var(--primary);
+        font-weight: 500;
+    }
+
+    @media (max-width: 600px) {
+        .subtitle {
+            font-size: 14px;
+        }
+
+        textarea {
+            font-size: 15px;
+        }
+
+        .day-option {
+            padding: 10px 15px;
+            font-size: 14px;
+        }
+
+        .secret-link {
+            font-size: 14px;
+            padding: 12px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Create a Secret Message</h1>
+    <p class="subtitle">Share sensitive information securely</p>
+
+    <form id="secretForm">
+        <div class="form-group">
+            <label for="msg">Your secret message</label>
+            <textarea id="msg" name="msg" placeholder="Enter your confidential message here..." required></textarea>
+        </div>
+        <div class="form-group">
+            <label>How many days should the secret be available?</label>
+            <div class="days-selector" id="daysSelector">
+                <div class="day-option selected" data-days="1">1 day</div>
+                <div class="day-option" data-days="2">2 days</div>
+                <div class="day-option" data-days="3">3 days</div>
+                <div class="day-option" data-days="4">4 days</div>
+            </div>
+            <input type="hidden" id="due" name="due" value="1">
+        </div>
+        <button type="submit" class="btn" id="createButton">
+            <span class="loading" id="loading"></span>
+            <span class="btn-text">Create secret link</span>
+        </button>
+    </form>
+
+    <div class="result-container" id="resultContainer">
+        <h2 class="result-title">Your secret link is ready!</h2>
+        <p>Share this link with the recipient:</p>
+        <div class="secret-link" id="secretLink"></div>
+        <button class="btn" id="copyBtn">Copy to clipboard</button>
+        <button class="secondary-btn" id="newSecretBtn">Create another secret</button>
+    </div>
+
+    <div class="footer">
+        Your message is encrypted and will be automatically deleted after the selected period or when viewed.
+    </div>
+</div>
+
+<script>
+    // Day selection
+    const days = document.querySelectorAll('.day-option');
+    const dueInput = document.getElementById('due');
+    days.forEach(el => el.addEventListener('click', () => {
+        days.forEach(d => d.classList.remove('selected'));
+        el.classList.add('selected');
+        dueInput.value = el.dataset.days;
+    }));
+
+    // Elements
+    const form = document.getElementById('secretForm');
+    const btn = document.getElementById('createButton');
+    const loading = document.getElementById('loading');
+    const btnText = document.querySelector('.btn-text');
+    const resultBlock = document.getElementById('resultContainer');
+    const linkDiv = document.getElementById('secretLink');
+    const copyBtn = document.getElementById('copyBtn');
+    const newSecretBtn = document.getElementById('newSecretBtn');
+
+    // Form submission
+    form.addEventListener('submit', async e => {
+        e.preventDefault();
+        btn.disabled = true;
+        loading.style.display = 'inline-block';
+        btnText.textContent = 'Creating...';
+
+        try {
+            const formData = new URLSearchParams();
+            formData.append('msg', form.msg.value);
+            formData.append('due', form.due.value);
+            const resp = await fetch('/post/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData.toString()
+            });
+            if (!resp.ok) throw new Error(`Error ${resp.status}`);
+            linkDiv.textContent = await resp.text();
+            resultBlock.style.display = 'block';
+            form.style.display = 'none';
+        } catch (err) {
+            alert('Failed to create link: ' + err.message);
+        } finally {
+            btn.disabled = false;
+            loading.style.display = 'none';
+            btnText.textContent = 'Create secret link';
+        }
+    });
+
+    // Copy to clipboard
+    copyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(linkDiv.textContent)
+            .then(() => copyBtn.textContent = 'Copied!')
+            .finally(() => setTimeout(() => copyBtn.textContent = 'Copy to clipboard', 2000));
+    });
+
+    // Create another
+    newSecretBtn.addEventListener('click', () => {
+        form.reset();
+        days[0].click();
+        resultBlock.style.display = 'none';
+        form.style.display = 'block';
+        linkDiv.textContent = '';
+    });
+</script>
+{% endblock %}

@@ -5,9 +5,9 @@ import (
 	"log"
 	"log/slog"
 	"os"
-	"path"
 	"time"
 
+	"github.com/flosch/pongo2/v6"
 	goredis "github.com/redis/go-redis/v9"
 
 	"enigma/internal/api"
@@ -144,28 +144,14 @@ func (c *container) APIServer() *api.Server {
 	if c.apiServer == nil {
 		options := c.Config().Server
 
-		const (
-			indexTemplateFileName      = "index.html"
-			viewSecretTemplateFileName = "view_secret.html"
-		)
-
-		server := api.NewServer(c.SecretsProvider())
-
-		indexTemplate, err := os.ReadFile(
-			path.Join(options.TemplatesPath, indexTemplateFileName),
-		)
+		loader, err := pongo2.NewLocalFileSystemLoader(options.TemplatesPath)
 		if err != nil {
-			log.Fatalf("failed to read index template err: %s", err.Error())
+			log.Fatalf("failed to load templates path: %s", err.Error())
 		}
 
-		viewSecretTemplate, err := os.ReadFile(
-			path.Join(options.TemplatesPath, viewSecretTemplateFileName),
-		)
-		if err != nil {
-			log.Fatalf("failed to read view secret template err: %s", err.Error())
-		}
+		templateSet := pongo2.NewSet("templates", loader)
 
-		server.LoadHandlers(indexTemplate, viewSecretTemplate, options.ExternalURL)
+		server := api.NewServer(c.SecretsProvider(), templateSet, options.ExternalURL)
 
 		c.apiServer = server
 	}
