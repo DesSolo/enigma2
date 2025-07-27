@@ -3,9 +3,10 @@ package secrets
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	mocks_hasher "enigma/internal/pkg/hasher/mocks"
 	mocks_storage "enigma/internal/pkg/storage/mocks"
-	
 )
 
 func TestOptions(t *testing.T) {
