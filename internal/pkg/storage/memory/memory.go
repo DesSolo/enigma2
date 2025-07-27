@@ -43,7 +43,7 @@ func (s *Storage) Get(_ context.Context, key string) (string, error) {
 
 	if secret.expire.Before(time.Now().UTC()) {
 		delete(s.secrets, key)
-		return "", nil
+		return "", storage.ErrNotFound
 	}
 
 	return secret.text, nil
@@ -84,3 +84,8 @@ func (s *Storage) IsUniq(_ context.Context, key string) (bool, error) {
 func (s *Storage) Close() error {
 	return nil
 }
+
+// TODO: add cleaner
+// by timer
+// allocate new map
+// copy secret when it is relevant

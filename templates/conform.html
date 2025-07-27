@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<style>
+    .message {
+        color: var(--gray);
+        font-size: 16px;
+        margin-bottom: 30px;
+    }
+
+    .warning {
+        margin: 25px 0;
+        padding: 15px;
+        background: var(--warning-bg);
+        border: 1px solid var(--warning-border);
+        border-radius: 10px;
+        color: #856404;
+        font-size: 14px;
+        text-align: left;
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .warning-icon {
+        width: 20px;
+        height: 20px;
+        fill: #856404;
+        flex-shrink: 0;
+        margin-top: 3px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1>Your secret message is ready.</h1>
+
+  <p class="message">
+    Attention: we will show it only once.
+  </p>
+
+  <button class="btn" id="showButton" onclick="showMessage()">
+    <span class="loading" id="loading"></span>
+    <span class="btn-text">Show message →</span>
+  </button>
+
+  <div class="warning">
+    <svg class="warning-icon" viewBox="0 0 24 24">
+      <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+    </svg>
+    <strong>Important:</strong> After viewing, the message will be automatically deleted from the server and will no longer be available. Make sure you're ready to receive it.
+  </div>
+
+  <div class="footer">
+    Messages are automatically deleted after first view
+  </div>
+</div>
+
+<script>
+  function showMessage() {
+    window.location.href = window.location.href + "?conform=true";
+  }
+</script>
+{% endblock %}

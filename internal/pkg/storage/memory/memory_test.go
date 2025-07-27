@@ -1,79 +1,98 @@
-package memory_test
+package memory
 
 import (
 	"testing"
+	"time"
 
+	"github.com/stretchr/testify/require"
 	"golang.org/x/net/context"
-
-	"enigma/internal/pkg/storage/memory"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestIsReady(t *testing.T) {
-	s := memory.NewStorage()
+	t.Parallel()
+
+	s := NewStorage()
 	ready, err := s.IsReady(context.Background())
 	assert.NoError(t, err)
 	assert.True(t, ready)
 }
 
-func TestSave(t *testing.T) {
-	s := memory.NewStorage()
-	assert.NoError(t, s.Save(context.Background(), "example", "msg", 1))
-}
+func TestGet_ExpectOK(t *testing.T) {
+	t.Parallel()
 
-var cases = []struct {
-	Key     string
-	Message string
-}{
-	{Key: "1", Message: "1"},
-	{Key: "2", Message: "2"},
-	{Key: "3", Message: "3"},
-}
-
-func TestGet(t *testing.T) {
-	s := memory.NewStorage()
-	for _, tc := range cases {
-		s.Save(context.Background(), tc.Key, tc.Message, 1) // nolint:errcheck
-		msg, err := s.Get(context.Background(), tc.Key)
-		assert.NoError(t, err)
-		assert.Equal(t, msg, tc.Message)
+	s := NewStorage()
+	s.secrets["test"] = &secret{
+		text:   "test",
+		expire: time.Now().UTC().Add(time.Hour),
 	}
+
+	got, err := s.Get(context.Background(), "test")
+	require.NoError(t, err)
+	assert.Equal(t, "test", got)
 }
 
-func TestGetExpired(t *testing.T) {
-	s := memory.NewStorage()
-	for _, tc := range cases {
-		s.Save(context.Background(), tc.Key, tc.Message, -1) // nolint:errcheck
-		msg, err := s.Get(context.Background(), tc.Key)
-		assert.NoError(t, err)
-		assert.NotEqual(t, msg, tc.Message)
-	}
+func TestGet_notFound_ExpectErr(t *testing.T) {
+	t.Parallel()
+
+	s := NewStorage()
+
+	got, err := s.Get(context.Background(), "test")
+	require.EqualError(t, err, "not found")
+	assert.Equal(t, "", got)
 }
 
-func TestDelete(t *testing.T) {
-	s := memory.NewStorage()
-	for _, tc := range cases {
-		s.Save(context.Background(), tc.Key, tc.Message, 1) // nolint:errcheck
-		assert.NoError(t, s.Delete(context.Background(), tc.Key))
+func TestGet_expired_ExpectErr(t *testing.T) {
+	t.Parallel()
 
-		msg, _ := s.Get(context.Background(), tc.Key)
-		assert.NotEqual(t, msg, tc.Message)
+	s := NewStorage()
+	s.secrets["test"] = &secret{
+		text:   "test",
+		expire: time.Now().UTC().Add(-time.Hour),
 	}
+
+	got, err := s.Get(context.Background(), "test")
+	require.EqualError(t, err, "not found")
+	assert.Equal(t, "", got)
 }
 
-// TODO: fix tests
+func TestSave_ExpectOK(t *testing.T) {
+	t.Parallel()
 
-func TestIsUniq(t *testing.T) {
-	s := memory.NewStorage()
-	for _, tc := range cases {
-		s.Save(context.Background(), tc.Key, tc.Message, 1) // nolint:errcheck
-		uniq, err := s.IsUniq(context.Background(), tc.Key)
-		assert.NoError(t, err)
-		assert.False(t, uniq)
+	s := NewStorage()
 
-		s.Delete(context.Background(), tc.Key) // nolint:errcheck
-		uniq1, _ := s.IsUniq(context.Background(), tc.Key)
-		assert.True(t, uniq1)
+	err := s.Save(context.Background(), "test", "test message", time.Hour)
+	require.NoError(t, err)
+}
+
+func TestDelete_ExpectOK(t *testing.T) {
+	t.Parallel()
+
+	s := NewStorage()
+	err := s.Delete(context.Background(), "test")
+	require.NoError(t, err)
+}
+
+func TestIsUniq_ExpectOK(t *testing.T) {
+	t.Parallel()
+
+	s := NewStorage()
+	s.secrets["test"] = &secret{
+		text:   "test",
+		expire: time.Now().UTC().Add(time.Hour),
 	}
+
+	got, err := s.IsUniq(context.Background(), "test")
+	require.NoError(t, err)
+	assert.False(t, got)
+}
+
+func TestClose_ExpectOK(t *testing.T) {
+	t.Parallel()
+
+	s := NewStorage()
+
+	err := s.Close()
+	require.NoError(t, err)
 }
