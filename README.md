@@ -1,6 +1,4 @@
 ### ENIGMA
-![Docker Cloud Automated build](https://img.shields.io/docker/cloud/automated/dessolo/enigma2)
-![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/dessolo/enigma2)
 ![Docker Pulls](https://img.shields.io/docker/pulls/dessolo/enigma2)
 ![Docker Image Version (latest by date)](https://img.shields.io/docker/v/dessolo/enigma2)
 ![GitHub](https://img.shields.io/github/license/dessolo/enigma2)
@@ -12,7 +10,7 @@ see [deployments](/deployments/) examples
 
 ### Run container
 ```shell
-docker run --rm -p 8080:8080 dessolo/enigma2:latest
+docker run --rm -p 9000:9000 dessolo/enigma2:latest
 ```
 
 ### Features
@@ -59,7 +57,7 @@ make build-server
 #### Run compiled project
 ##### docker
 ```shell
-docker run --rm --name="enigma" -p 8080:8080 localhost/enigma
+docker run --rm --name="enigma" -p 9000:9000 localhost/enigma
 ```
 #### binary
 ```shell

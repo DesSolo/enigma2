@@ -46,7 +46,7 @@ func New(storage storage.SecretStorage, hasher hasher.Hasher, options ...OptionF
 func (p *Provider) SaveSecret(ctx context.Context, message string, dues int) (string, error) {
 	token, err := p.generateUniqToken(ctx, p.tokenLength, p.tokenSaveRetries)
 	if err != nil {
-		return "", fmt.Errorf("s.GenerateUniqToken: %w", err)
+		return "", fmt.Errorf("s.generateUniqToken: %w", err)
 	}
 
 	encrypted, err := p.hasher.Encrypt(message)
