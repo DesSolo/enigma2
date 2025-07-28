@@ -6,13 +6,16 @@
 
 OpenSource self-hosted solution to transfer disposable links, like [onetimesecret.com](http://onetimesecret.com)
 
-### Examples
-see [deployments](/deployments/) examples
+### Demo
+![demo](images/demo.gif)
 
 ### Run container
 ```shell
 docker run --rm -p 9000:9000 dessolo/enigma2:latest
 ```
+
+### Examples
+see [deployments](/deployments/) examples
 
 ### Features
 - **Secure**:
