@@ -18,7 +18,9 @@ func New() *App {
 func (a *App) Run(ctx context.Context) error {
 	di := newContainer(ctx)
 
-	configureLogger(di)
+	if err := configureLogger(di); err != nil {
+		return fmt.Errorf("fault configure logger: %w", err)
+	}
 
 	bindAddr := di.Config().Server.Bind
 

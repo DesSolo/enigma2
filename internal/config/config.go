@@ -11,7 +11,8 @@ import (
 // ServerConfig ...
 type ServerConfig struct {
 	Logging struct {
-		Level int `yaml:"level"`
+		Level  int    `yaml:"level"`
+		Format string `yaml:"format"`
 	} `yaml:"logging"`
 	Server struct {
 		Bind          string `yaml:"bind"`

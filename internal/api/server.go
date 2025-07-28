@@ -12,6 +12,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	slogchi "github.com/samber/slog-chi"
 
 	"enigma/internal/pkg/adapters/template"
 )
@@ -30,10 +31,9 @@ type SecretsProvider interface {
 // Server ...
 type Server struct {
 	secretsProvider SecretsProvider
+	template        template.Template
 	externalURL     string
-
-	template template.Template
-	router   *chi.Mux
+	router          *chi.Mux
 }
 
 // NewServer ...
@@ -71,9 +71,9 @@ func (s *Server) Run(ctx context.Context, addr string) error {
 }
 
 func (s *Server) initHandlers() {
-	s.router.Use(middleware.Recoverer)
 	s.router.Use(middleware.RequestID)
-	s.router.Use(middleware.Logger)
+	s.router.Use(slogchi.New(slog.Default()))
+	s.router.Use(middleware.Recoverer)
 
 	s.router.Get("/", s.indexHandler)
 	s.router.Post("/post/", s.createSecretHandler)

@@ -5,13 +5,18 @@ logging:
   #	Warn  = 4
   #	Error = 8
   level: -4
+  # log format
+  # supported formats:
+  #   text
+  #   json
+  format: text
 
 # server settings block
 server:
   # listen on specified address and port
   bind: 0.0.0.0:9000
   # full external url (used as prefix to view secret)
-  external_url: http://127.0.0.1:9000
+  external_url: http://127.0.0.1:8080
   # templates path
   templates_path: templates/
 
@@ -27,7 +32,7 @@ secrets:
     # redis settings block (required if kind = redis)
     redis:
       # connection address
-      address: 127.0.0.1:6379
+      address: redis:6379
       # connection password
       password: ""
       # database number
