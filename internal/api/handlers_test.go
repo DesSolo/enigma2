@@ -154,7 +154,7 @@ func Test_viewSecretHandler_viewConformPage_Exists_ExpectOK(t *testing.T) {
 	t.Parallel()
 
 	m := newMK(t)
-	token := "test_token"
+	token := "test_token" // nolint:goconst
 
 	m.secretsProvider.EXPECT().
 		CheckExistsSecret(mock.Anything, token).
