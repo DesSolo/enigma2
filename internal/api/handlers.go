@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/flosch/pongo2/v6"
 	"github.com/go-chi/chi/v5"
 
+	"enigma/internal/pkg/adapters/template"
 	"enigma/internal/pkg/storage"
 )
 
@@ -116,7 +116,7 @@ func (s *Server) viewSecretPage(token string) http.HandlerFunc {
 			return
 		}
 
-		s.shouldRenderTemplate(ctx, rw, "secret.html", pongo2.Context{
+		s.shouldRenderTemplate(ctx, rw, "secret.html", template.Data{
 			"secret": secret,
 		})
 	}
