@@ -1,18 +1,21 @@
 ### ENIGMA
 ![Docker Pulls](https://img.shields.io/docker/pulls/dessolo/enigma2)
 ![Docker Image Version (latest by date)](https://img.shields.io/docker/v/dessolo/enigma2)
-[![codecov](https://codecov.io/gh/dessolo/enigma2/branch/main/graph/badge.svg)](https://codecov.io/gh/dessolo/enigma2)
+[![codecov](https://codecov.io/gh/dessolo/enigma2/graph/badge.svg?token=LBULJOKX53)](https://codecov.io/gh/dessolo/enigma2)
 ![GitHub](https://img.shields.io/github/license/dessolo/enigma2)
 
 OpenSource self-hosted solution to transfer disposable links, like [onetimesecret.com](http://onetimesecret.com)
 
-### Examples
-see [deployments](/deployments/) examples
+### Demo
+![demo](images/demo.gif)
 
 ### Run container
 ```shell
 docker run --rm -p 9000:9000 dessolo/enigma2:latest
 ```
+
+### Examples
+see [deployments](/deployments/) examples
 
 ### Features
 - **Secure**:

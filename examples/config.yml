@@ -5,6 +5,11 @@ logging:
   #	Warn  = 4
   #	Error = 8
   level: -4
+  # log format
+  # supported formats:
+  #   text
+  #   json
+  format: text
 
 # server settings block
 server:

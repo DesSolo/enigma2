@@ -12,6 +12,7 @@ import (
 
 	"enigma/internal/api"
 	"enigma/internal/config"
+	"enigma/internal/pkg/adapters/template/pongo"
 	"enigma/internal/pkg/hasher"
 	"enigma/internal/pkg/providers/secrets"
 	"enigma/internal/pkg/storage"
@@ -151,7 +152,7 @@ func (c *container) APIServer() *api.Server {
 
 		templateSet := pongo2.NewSet("templates", loader)
 
-		server := api.NewServer(c.SecretsProvider(), templateSet, options.ExternalURL)
+		server := api.NewServer(c.SecretsProvider(), pongo.NewAdapter(templateSet), options.ExternalURL)
 
 		c.apiServer = server
 	}

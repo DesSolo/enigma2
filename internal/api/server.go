@@ -1,3 +1,5 @@
+//go:generate mockery --case snake --with-expecter --name SecretsProvider
+
 package api
 
 import (
@@ -8,9 +10,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/flosch/pongo2/v6"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	slogchi "github.com/samber/slog-chi"
+
+	"enigma/internal/pkg/adapters/template"
 )
 
 const (
@@ -27,18 +31,17 @@ type SecretsProvider interface {
 // Server ...
 type Server struct {
 	secretsProvider SecretsProvider
+	template        template.Template
 	externalURL     string
-
-	templateSet *pongo2.TemplateSet
-	router      *chi.Mux
+	router          *chi.Mux
 }
 
 // NewServer ...
-func NewServer(secretsProvider SecretsProvider, templateSet *pongo2.TemplateSet, externalURL string) *Server {
+func NewServer(secretsProvider SecretsProvider, template template.Template, externalURL string) *Server {
 	return &Server{
 		secretsProvider: secretsProvider,
 		externalURL:     externalURL,
-		templateSet:     templateSet,
+		template:        template,
 		router:          chi.NewRouter(),
 	}
 }
@@ -68,9 +71,9 @@ func (s *Server) Run(ctx context.Context, addr string) error {
 }
 
 func (s *Server) initHandlers() {
-	s.router.Use(middleware.Recoverer)
 	s.router.Use(middleware.RequestID)
-	s.router.Use(middleware.Logger)
+	s.router.Use(slogchi.New(slog.Default()))
+	s.router.Use(middleware.Recoverer)
 
 	s.router.Get("/", s.indexHandler)
 	s.router.Post("/post/", s.createSecretHandler)
