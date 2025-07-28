@@ -26,3 +26,11 @@ func newMK(t *testing.T) *mk {
 		server:          NewServer(secretsProvider, template, externalURL),
 	}
 }
+
+func Test_initHandlers_ExpectOk(t *testing.T) {
+	t.Parallel()
+
+	m := newMK(t)
+
+	m.server.initHandlers()
+}
