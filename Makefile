@@ -1,21 +1,21 @@
 PROJECT_NAME = $(shell basename "$(PWD)")
-BINARIES_DIRECTORY = bin
+RELEASE_DIRECTORY = bin/release
 VERSION ?= $(shell cat VERSION)
 LDFLAGS = "-w -s -X main.version=${VERSION}"
 
 .DEFAULT_GOAL := help
 
 _static:
-	mkdir ${BINARIES_DIRECTORY}
-	cp -r templates ${BINARIES_DIRECTORY}/templates
+	mkdir ${RELEASE_DIRECTORY}
+	cp -r templates ${RELEASE_DIRECTORY}/templates
 
 _config:
-	mkdir ${BINARIES_DIRECTORY}/config
-	cp examples/config.yml ${BINARIES_DIRECTORY}/config/config.yml
+	mkdir ${RELEASE_DIRECTORY}/config
+	cp examples/config.yml ${RELEASE_DIRECTORY}/config/config.yml
 
-## clean: Clean binaries directory
+## clean: Clean release directory
 clean:
-	rm -rf ${BINARIES_DIRECTORY}
+	rm -rf ${RELEASE_DIRECTORY}
 
 ## test: Run all tests
 test:
@@ -35,28 +35,28 @@ run-server:
 
 ## build-server: Build enigma server
 build-server: clean _static _config
-	go build -ldflags ${LDFLAGS} -o ${BINARIES_DIRECTORY}/${PROJECT_NAME}_server_${VERSION}_linux_x64 cmd/server/main.go
+	go build -ldflags ${LDFLAGS} -o ${RELEASE_DIRECTORY}/${PROJECT_NAME}_server_${VERSION}_linux_x64 cmd/server/main.go
 
 ## build-server-tar: Build server and compress to tar.gz
 build-server-tar: build-server
-	for filename in ${BINARIES_DIRECTORY}/enigma2_server* ; do \
+	for filename in ${RELEASE_DIRECTORY}/enigma2_server* ; do \
 		echo "  > start compress $$filename ..." ; \
-		tar -zcvf $$filename.tar.gz $$filename ${BINARIES_DIRECTORY}/templates ${BINARIES_DIRECTORY}/config ; \
+		tar -zcvf $$filename.tar.gz $$filename ${RELEASE_DIRECTORY}/templates ${RELEASE_DIRECTORY}/config ; \
 		rm $$filename ;\
 		echo "  > ... done" ; \
 	done
 
 ## build-client: Build enigma client
 build-client: clean
-	GOOS=linux GOARCH=amd64 go build -ldflags ${LDFLAGS} -o ${BINARIES_DIRECTORY}/${PROJECT_NAME}_client_${VERSION}_linux_x64 cmd/client/main.go
-	GOOS=windows GOARCH=amd64 go build -ldflags ${LDFLAGS} -o ${BINARIES_DIRECTORY}/${PROJECT_NAME}_client_${VERSION}_windows_x64.exe cmd/client/main.go
+	GOOS=linux GOARCH=amd64 go build -ldflags ${LDFLAGS} -o ${RELEASE_DIRECTORY}/${PROJECT_NAME}_client_${VERSION}_linux_x64 cmd/client/main.go
+	GOOS=windows GOARCH=amd64 go build -ldflags ${LDFLAGS} -o ${RELEASE_DIRECTORY}/${PROJECT_NAME}_client_${VERSION}_windows_x64.exe cmd/client/main.go
 
 ## build-all: Build client and server
 build-all: build-server build-client
 
 ## build-docker: Building a binary file to run in a container
 build-docker: clean _static
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o ${BINARIES_DIRECTORY}/${PROJECT_NAME}_docker cmd/server/main.go
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o ${RELEASE_DIRECTORY}/${PROJECT_NAME}_docker cmd/server/main.go
 
 ## tag: Create and push git tag
 tag:
@@ -69,7 +69,11 @@ endif
 
 ## upload-github: Add binary to github releases
 upload-github: build-server-tar build-client
-	@bash scripts/upload-github-release-asset.sh github_api_token=${GITHUB_API_TOKEN} owner=DesSolo repo=enigma2 tag=${VERSION} files=./${BINARIES_DIRECTORY}/*
+	@if [ -z "${GITHUB_API_TOKEN}" ]; then \
+		$(error GITHUB_API_TOKEN is not set); \
+		exit 1; \
+	fi
+	@bash scripts/upload-github-release-asset.sh github_api_token=${GITHUB_API_TOKEN} owner=DesSolo repo=${PROJECT_NAME} tag=${VERSION} files=./${RELEASE_DIRECTORY}/*
 
 LOCAL_BIN := $(CURDIR)/bin
 LINT_VERSION := 2.2.1
